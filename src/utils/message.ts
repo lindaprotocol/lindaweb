@@ -3,7 +3,7 @@ import { ADDRESS_PREFIX } from './address.js';
 import { getBase58CheckAddress } from './crypto.js';
 import { hexStr2byteArray } from './code.js';
 
-export const TRON_MESSAGE_PREFIX = '\x19TRON Signed Message:\n';
+export const LINDA_MESSAGE_PREFIX = '\x19LINDA Signed Message:\n';
 
 export function hashMessage(message: string | Uint8Array | Array<number>) {
     if (typeof message === 'string') {
@@ -12,7 +12,7 @@ export function hashMessage(message: string | Uint8Array | Array<number>) {
         message = new Uint8Array(message);
     }
 
-    return keccak256(concat([toUtf8Bytes(TRON_MESSAGE_PREFIX), toUtf8Bytes(String(message.length)), message]));
+    return keccak256(concat([toUtf8Bytes(LINDA_MESSAGE_PREFIX), toUtf8Bytes(String(message.length)), message]));
 }
 
 export function signMessage(message: string | Uint8Array | Array<number>, privateKey: string) {

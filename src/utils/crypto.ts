@@ -73,8 +73,8 @@ export function ecRecover(signedData: string, signature: string) {
     signature = '0x' + signature.replace(/^0x/, '');
 
     const recovered = recoverAddress(arrayify(signedData), Signature.from(signature));
-    const tronAddress = ADDRESS_PREFIX + recovered.substring(2);
-    return tronAddress;
+    const lindaAddress = ADDRESS_PREFIX + recovered.substring(2);
+    return lindaAddress;
 }
 
 export function arrayToBase64String(a: number[]) {

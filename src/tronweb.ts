@@ -6,7 +6,7 @@ import EventEmitter from 'eventemitter3';
 import semver from 'semver';
 
 import { TransactionBuilder } from './lib/TransactionBuilder/TransactionBuilder.js';
-import { Trx } from './lib/trx.js';
+import { Lind } from './lib/lind.js';
 import { Contract } from './lib/contract/index.js';
 import { Plugin } from './lib/plugin.js';
 import { Event } from './lib/event.js';
@@ -14,9 +14,9 @@ import { keccak256 } from './utils/ethersUtils.js';
 import { fromHex, fromPrivateKey, isAddress, toHex, toChecksumAddress, isChecksumAddress } from './utils/address.js';
 import { HeadersType } from './types/Providers.js';
 import { isString } from './utils/validations.js';
-import { DefaultAddress, NodeProvider, TronWebOptions, IBigNumber } from './types/TronWeb.js';
+import { DefaultAddress, NodeProvider, LindaWebOptions, IBigNumber } from './types/LindaWeb.js';
 import { ContractAbiInterface, ContractInstance } from './types/ABI.js';
-import { Address } from './types/Trx.js';
+import { Address } from './types/Lind.js';
 
 const DEFAULT_VERSION = '4.7.1';
 
@@ -24,22 +24,22 @@ const FEE_LIMIT = 150000000;
 
 const version = '6.0.4';
 
-function isValidOptions(options: unknown): options is TronWebOptions {
+function isValidOptions(options: unknown): options is LindaWebOptions {
     return (
         !!options &&
         typeof options === 'object' &&
-        (!!(options as TronWebOptions).fullNode || !!(options as TronWebOptions).fullHost)
+        (!!(options as LindaWebOptions).fullNode || !!(options as LindaWebOptions).fullHost)
     );
 }
 
-export class TronWeb extends EventEmitter {
+export class LindaWeb extends EventEmitter {
     providers: Providers;
     BigNumber: typeof BigNumber;
     transactionBuilder: TransactionBuilder;
-    trx: Trx;
+    lind: Lind;
     plugin: Plugin;
     event: Event;
-    version: typeof TronWeb.version;
+    version: typeof LindaWeb.version;
     static version = version;
     utils: typeof utils;
 
@@ -53,12 +53,12 @@ export class TronWeb extends EventEmitter {
     solidityNode!: HttpProvider;
     eventServer?: HttpProvider;
 
-    constructor(options: TronWebOptions);
+    constructor(options: LindaWebOptions);
     constructor(fullNode: NodeProvider, solidityNode: NodeProvider, eventServer?: NodeProvider, privateKey?: string);
     /* prettier-ignore */
     constructor(fullNode: NodeProvider, solidityNode: NodeProvider, eventServer: NodeProvider, privateKey?: string);
     constructor(
-        options: TronWebOptions | NodeProvider,
+        options: LindaWebOptions | NodeProvider,
         solidityNode: NodeProvider = '',
         eventServer?: NodeProvider,
         privateKey = ''
@@ -87,7 +87,7 @@ export class TronWeb extends EventEmitter {
 
         this.event = new Event(this);
         this.transactionBuilder = new TransactionBuilder(this);
-        this.trx = new Trx(this);
+        this.lind = new Lind(this);
         this.plugin = new Plugin(this, {
             disablePlugins: isValidOptions(options) ? options.disablePlugins : false,
         });
@@ -107,23 +107,23 @@ export class TronWeb extends EventEmitter {
             base58: false,
         };
 
-        this.version = TronWeb.version;
-        this.sha3 = TronWeb.sha3;
-        this.fromUtf8 = TronWeb.fromUtf8;
-        this.address = TronWeb.address;
-        this.toAscii = TronWeb.toAscii;
-        this.toUtf8 = TronWeb.toUtf8;
-        this.isAddress = TronWeb.isAddress;
-        this.fromAscii = TronWeb.fromAscii;
-        this.toHex = TronWeb.toHex;
-        this.toBigNumber = TronWeb.toBigNumber;
-        this.toDecimal = TronWeb.toDecimal;
-        this.fromDecimal = TronWeb.fromDecimal;
-        this.toSun = TronWeb.toSun;
-        this.fromSun = TronWeb.fromSun;
-        this.createAccount = TronWeb.createAccount;
-        this.createRandom = TronWeb.createRandom;
-        this.fromMnemonic = TronWeb.fromMnemonic;
+        this.version = LindaWeb.version;
+        this.sha3 = LindaWeb.sha3;
+        this.fromUtf8 = LindaWeb.fromUtf8;
+        this.address = LindaWeb.address;
+        this.toAscii = LindaWeb.toAscii;
+        this.toUtf8 = LindaWeb.toUtf8;
+        this.isAddress = LindaWeb.isAddress;
+        this.fromAscii = LindaWeb.fromAscii;
+        this.toHex = LindaWeb.toHex;
+        this.toBigNumber = LindaWeb.toBigNumber;
+        this.toDecimal = LindaWeb.toDecimal;
+        this.fromDecimal = LindaWeb.fromDecimal;
+        this.toSun = LindaWeb.toSun;
+        this.fromSun = LindaWeb.fromSun;
+        this.createAccount = LindaWeb.createAccount;
+        this.createRandom = LindaWeb.createRandom;
+        this.fromMnemonic = LindaWeb.fromMnemonic;
 
         if (privateKey) this.setPrivateKey(privateKey);
         this.fullnodeVersion = DEFAULT_VERSION;
@@ -140,7 +140,7 @@ export class TronWeb extends EventEmitter {
 
     async getFullnodeVersion() {
         try {
-            const nodeInfo = await this.trx.getNodeInfo();
+            const nodeInfo = await this.lind.getNodeInfo();
             this.fullnodeVersion = nodeInfo.configNodeInfo.codeVersion;
             if (this.fullnodeVersion.split('.').length === 2) {
                 this.fullnodeVersion += '.0';
@@ -162,7 +162,7 @@ export class TronWeb extends EventEmitter {
 
     setPrivateKey(privateKey: string) {
         try {
-            this.setAddress(TronWeb.address.fromPrivateKey(privateKey) as string);
+            this.setAddress(LindaWeb.address.fromPrivateKey(privateKey) as string);
         } catch {
             throw new Error('Invalid private key provided');
         }
@@ -172,12 +172,12 @@ export class TronWeb extends EventEmitter {
     }
 
     setAddress(address: string) {
-        if (!TronWeb.isAddress(address)) throw new Error('Invalid address provided');
+        if (!LindaWeb.isAddress(address)) throw new Error('Invalid address provided');
 
-        const hex = TronWeb.address.toHex(address);
-        const base58 = TronWeb.address.fromHex(address);
+        const hex = LindaWeb.address.toHex(address);
+        const base58 = LindaWeb.address.fromHex(address);
 
-        if (this.defaultPrivateKey && TronWeb.address.fromPrivateKey(this.defaultPrivateKey) !== base58)
+        if (this.defaultPrivateKey && LindaWeb.address.fromPrivateKey(this.defaultPrivateKey) !== base58)
             this.defaultPrivateKey = false;
 
         this.defaultAddress = {
@@ -267,7 +267,7 @@ export class TronWeb extends EventEmitter {
         return new Contract<Abi>(this, abi, address!) as ContractInstance<Abi>;
     }
 
-    address: typeof TronWeb.address;
+    address: typeof LindaWeb.address;
     static get address() {
         return {
             fromHex(address: string) {
@@ -288,28 +288,28 @@ export class TronWeb extends EventEmitter {
         };
     }
 
-    sha3: typeof TronWeb.sha3;
+    sha3: typeof LindaWeb.sha3;
     static sha3(string: string, prefix = true) {
         return (prefix ? '0x' : '') + keccak256(Buffer.from(string, 'utf-8')).toString().substring(2);
     }
 
-    toHex: typeof TronWeb.toHex;
+    toHex: typeof LindaWeb.toHex;
     static toHex(val: string | number | boolean | Record<string | number | symbol, unknown> | unknown[] | IBigNumber) {
-        if (utils.isBoolean(val)) return TronWeb.fromDecimal(+val);
+        if (utils.isBoolean(val)) return LindaWeb.fromDecimal(+val);
 
-        if (utils.isBigNumber(val)) return TronWeb.fromDecimal(val);
+        if (utils.isBigNumber(val)) return LindaWeb.fromDecimal(val);
 
-        if (typeof val === 'object') return TronWeb.fromUtf8(JSON.stringify(val));
+        if (typeof val === 'object') return LindaWeb.fromUtf8(JSON.stringify(val));
 
         if (utils.isString(val)) {
             if (/^(-|)0x/.test(val)) return val;
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            if (!isFinite(val) || /^\s*$/.test(val)) return TronWeb.fromUtf8(val);
+            if (!isFinite(val) || /^\s*$/.test(val)) return LindaWeb.fromUtf8(val);
         }
 
-        const result = TronWeb.fromDecimal(val as number);
+        const result = LindaWeb.fromDecimal(val as number);
         if (result === '0xNaN') {
             throw new Error('The passed value is not convertible to a hex string');
         } else {
@@ -317,7 +317,7 @@ export class TronWeb extends EventEmitter {
         }
     }
 
-    toUtf8: typeof TronWeb.toUtf8;
+    toUtf8: typeof LindaWeb.toUtf8;
     static toUtf8(hex: string) {
         if (utils.isHex(hex)) {
             hex = hex.replace(/^0x/, '');
@@ -327,7 +327,7 @@ export class TronWeb extends EventEmitter {
         }
     }
 
-    fromUtf8: typeof TronWeb.fromUtf8;
+    fromUtf8: typeof LindaWeb.fromUtf8;
     static fromUtf8(string: string) {
         if (!utils.isString(string)) {
             throw new Error('The passed value is not a valid utf-8 string');
@@ -335,7 +335,7 @@ export class TronWeb extends EventEmitter {
         return '0x' + Buffer.from(string, 'utf8').toString('hex');
     }
 
-    toAscii: typeof TronWeb.toAscii;
+    toAscii: typeof LindaWeb.toAscii;
     static toAscii(hex: string) {
         if (utils.isHex(hex)) {
             let str = '';
@@ -354,7 +354,7 @@ export class TronWeb extends EventEmitter {
         }
     }
 
-    fromAscii: typeof TronWeb.fromAscii;
+    fromAscii: typeof LindaWeb.fromAscii;
     static fromAscii(string: string, padding?: number) {
         if (!utils.isString(string)) {
             throw new Error('The passed value is not a valid utf-8 string');
@@ -362,32 +362,32 @@ export class TronWeb extends EventEmitter {
         return '0x' + Buffer.from(string, 'ascii').toString('hex').padEnd(padding!, '0');
     }
 
-    toDecimal: typeof TronWeb.toDecimal;
+    toDecimal: typeof LindaWeb.toDecimal;
     static toDecimal(value: string | number | IBigNumber) {
-        return TronWeb.toBigNumber(value).toNumber();
+        return LindaWeb.toBigNumber(value).toNumber();
     }
 
-    fromDecimal: typeof TronWeb.fromDecimal;
+    fromDecimal: typeof LindaWeb.fromDecimal;
     static fromDecimal(value: number | IBigNumber) {
-        const number = TronWeb.toBigNumber(value);
+        const number = LindaWeb.toBigNumber(value);
         const result = number.toString(16);
 
         return number.isLessThan(0) ? '-0x' + result.substr(1) : '0x' + result;
     }
 
-    fromSun: typeof TronWeb.fromSun;
+    fromSun: typeof LindaWeb.fromSun;
     static fromSun(sun: number): string | IBigNumber {
-        const trx = TronWeb.toBigNumber(sun).div(1_000_000);
-        return utils.isBigNumber(sun) ? trx : trx.toString(10);
+        const lind = LindaWeb.toBigNumber(sun).div(1_000_000);
+        return utils.isBigNumber(sun) ? lind : lind.toString(10);
     }
 
-    toSun: typeof TronWeb.toSun;
-    static toSun(trx: number): string | IBigNumber {
-        const sun = TronWeb.toBigNumber(trx).times(1_000_000);
-        return utils.isBigNumber(trx) ? sun : sun.toString(10);
+    toSun: typeof LindaWeb.toSun;
+    static toSun(lind: number): string | IBigNumber {
+        const sun = LindaWeb.toBigNumber(lind).times(1_000_000);
+        return utils.isBigNumber(lind) ? sun : sun.toString(10);
     }
 
-    toBigNumber: typeof TronWeb.toBigNumber;
+    toBigNumber: typeof LindaWeb.toBigNumber;
     static toBigNumber(amount: string | number | IBigNumber = 0): IBigNumber {
         if (utils.isBigNumber(amount)) return amount;
 
@@ -396,19 +396,19 @@ export class TronWeb extends EventEmitter {
         return new BigNumber(amount.toString(10), 10);
     }
 
-    isAddress: typeof TronWeb.isAddress;
+    isAddress: typeof LindaWeb.isAddress;
     static isAddress(address: unknown = ''): boolean {
         return isAddress(address);
     }
 
-    createAccount: typeof TronWeb.createAccount;
+    createAccount: typeof LindaWeb.createAccount;
     static async createAccount() {
         const account = utils.accounts.generateAccount();
 
         return account;
     }
 
-    createRandom: typeof TronWeb.createRandom;
+    createRandom: typeof LindaWeb.createRandom;
     static createRandom(
         ...params: Parameters<(typeof utils)['accounts']['generateRandom']>
     ): ReturnType<(typeof utils)['accounts']['generateRandom']> {
@@ -417,7 +417,7 @@ export class TronWeb extends EventEmitter {
         return account;
     }
 
-    fromMnemonic: typeof TronWeb.fromMnemonic;
+    fromMnemonic: typeof LindaWeb.fromMnemonic;
     static fromMnemonic(
         ...params: Parameters<(typeof utils)['accounts']['generateAccountWithMnemonic']>
     ): ReturnType<(typeof utils)['accounts']['generateAccountWithMnemonic']> {
@@ -434,4 +434,4 @@ export class TronWeb extends EventEmitter {
         };
     }
 }
-export default TronWeb;
+export default LindaWeb;

@@ -1,4 +1,4 @@
-import type { Address } from "./Trx";
+import type { Address } from "./Lind";
 import type { Method } from "../lib/contract/method";
 import type { Contract } from "../lib/contract/index";
 export type AbiParamsCommon = {

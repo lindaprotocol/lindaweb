@@ -22,7 +22,7 @@ import { ADDRESS_PREFIX_REGEX, toHex } from './address.js';
 function getAddress(address: string) {
     return toHex(address).replace(ADDRESS_PREFIX_REGEX, '0x');
 }
-function getTronAddress(address: string) {
+function getLindaAddress(address: string) {
     return toHex(address);
 }
 
@@ -123,7 +123,7 @@ const domainChecks: Record<string, (value: any) => any> = {
     },
     verifyingContract: function (value: any) {
         try {
-            return getTronAddress(value).toLowerCase();
+            return getLindaAddress(value).toLowerCase();
         } catch (error) {
             //
         }

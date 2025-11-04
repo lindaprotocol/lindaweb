@@ -1,20 +1,20 @@
 import { assert } from 'chai';
-import { TronWeb, utils, TransactionBuilder } from '../setup/TronWeb.js';
-import tronWebBuilder from '../helpers/tronWebBuilder.js';
+import { LindaWeb, utils, TransactionBuilder } from '../setup/LindaWeb.js';
+import lindaWebBuilder from '../helpers/lindaWebBuilder.js';
 
-describe('#TronWeb.utils.transaction', function() {
-    let tronWeb: TronWeb;
+describe('#LindaWeb.utils.transaction', function() {
+    let lindaWeb: LindaWeb;
 
     describe('DTriggerSmartContract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['triggerSmartContract']>>['transaction'];
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
-        let account2: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
+        let account2: Awaited<ReturnType<LindaWeb['createAccount']>>;
         const contractAddress = 'TU1ntBzpGPp7GJkzxLTKwYsneJ9JKUmBCK'; // nile usdt address
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            account2 = await tronWeb.createAccount();
-            tx = (await tronWeb.transactionBuilder.triggerSmartContract(
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            account2 = await lindaWeb.createAccount();
+            tx = (await lindaWeb.transactionBuilder.triggerSmartContract(
                 contractAddress,
                 'transfer(address,uint256)',
                 {
@@ -87,7 +87,7 @@ describe('#TronWeb.utils.transaction', function() {
             const abiCoder = new utils.ethersUtils.AbiCoder();
             const functionSelector = getFunctionSelectorHex('transfer(address,uint256)');
             const data = abiCoder.decode(['address', 'uint256'], '0x' + value.data.slice(8));
-            const address = tronWeb.address.fromHex(data[0].replace('0x', '41'));
+            const address = lindaWeb.address.fromHex(data[0].replace('0x', '41'));
             const amount = data[1];
             assert.equal(functionSelector, value.data.slice(0, 8).toLowerCase());
             assert.equal(address, account2.address.base58);
@@ -107,12 +107,12 @@ describe('#TronWeb.utils.transaction', function() {
 
     describe('DFreezeBalanceV2Contract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['freezeBalanceV2']>>;
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
         const freezeBalance = 1e6;
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            tx = await tronWeb.transactionBuilder.freezeBalanceV2(freezeBalance, 'ENERGY', account.address.base58);
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            tx = await lindaWeb.transactionBuilder.freezeBalanceV2(freezeBalance, 'ENERGY', account.address.base58);
         });
 
         it('should deserialize the right result', async () => {
@@ -127,12 +127,12 @@ describe('#TronWeb.utils.transaction', function() {
 
     describe('DUnfreezeBalanceV2Contract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['unfreezeBalanceV2']>>;
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
         const unfreezeBalance = 1e6;
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            tx = await tronWeb.transactionBuilder.unfreezeBalanceV2(unfreezeBalance, 'ENERGY', account.address.base58);
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            tx = await lindaWeb.transactionBuilder.unfreezeBalanceV2(unfreezeBalance, 'ENERGY', account.address.base58);
         });
 
         it('should deserialize the right result', async () => {
@@ -147,11 +147,11 @@ describe('#TronWeb.utils.transaction', function() {
 
     describe('DCancelAllUnfreezeV2Contract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['cancelUnfreezeBalanceV2']>>;
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            tx = await tronWeb.transactionBuilder.cancelUnfreezeBalanceV2(account.address.base58);
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            tx = await lindaWeb.transactionBuilder.cancelUnfreezeBalanceV2(account.address.base58);
         });
 
         it('should deserialize the right result', async () => {
@@ -164,16 +164,16 @@ describe('#TronWeb.utils.transaction', function() {
 
     describe('DDelegateResourceContract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['delegateResource']>>;
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
-        let account2: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
+        let account2: Awaited<ReturnType<LindaWeb['createAccount']>>;
         const delegateAmount = 1e6;
         const lock = true;
         const lockPeriod = 3;
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            account2 = await tronWeb.createAccount();
-            tx = await tronWeb.transactionBuilder.delegateResource(delegateAmount, account.address.base58, 'ENERGY', account2.address.base58, lock, lockPeriod);
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            account2 = await lindaWeb.createAccount();
+            tx = await lindaWeb.transactionBuilder.delegateResource(delegateAmount, account.address.base58, 'ENERGY', account2.address.base58, lock, lockPeriod);
         });
 
         it('should deserialize the right result', async () => {
@@ -191,14 +191,14 @@ describe('#TronWeb.utils.transaction', function() {
 
     describe('DUnDelegateResourceContract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['undelegateResource']>>;
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
-        let account2: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
+        let account2: Awaited<ReturnType<LindaWeb['createAccount']>>;
         const delegateAmount = 1e6;
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            account2 = await tronWeb.createAccount();
-            tx = await tronWeb.transactionBuilder.undelegateResource(delegateAmount, account.address.base58, 'ENERGY', account2.address.base58);
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            account2 = await lindaWeb.createAccount();
+            tx = await lindaWeb.transactionBuilder.undelegateResource(delegateAmount, account.address.base58, 'ENERGY', account2.address.base58);
         });
 
         it('should deserialize the right result', async () => {
@@ -214,11 +214,11 @@ describe('#TronWeb.utils.transaction', function() {
 
     describe('DWithdrawExpireUnfreezeContract', async () => {
         let tx: Awaited<ReturnType<TransactionBuilder['withdrawExpireUnfreeze']>>;
-        let account: Awaited<ReturnType<TronWeb['createAccount']>>;
+        let account: Awaited<ReturnType<LindaWeb['createAccount']>>;
         before(async () => {
-            tronWeb = tronWebBuilder.createInstance();
-            account = await tronWeb.createAccount();
-            tx = await tronWeb.transactionBuilder.withdrawExpireUnfreeze(account.address.base58);
+            lindaWeb = lindaWebBuilder.createInstance();
+            account = await lindaWeb.createAccount();
+            tx = await lindaWeb.transactionBuilder.withdrawExpireUnfreeze(account.address.base58);
         });
 
         it('should deserialize the right result', async () => {

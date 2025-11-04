@@ -1,7 +1,7 @@
-import { TronWeb } from '../setup/node.js';
+import { LindaWeb } from '../setup/node.js';
 
 const fullHost = 'http://127.0.0.1:' + (process.env.HOST_PORT || 9090);
-// const fullHost = 'https://nile.trongrid.io';
+// const fullHost = 'https://nile.lindagrid.io';
 
 export default {
     PRIVATE_KEY: process.env.PRIVATE_KEY as string,
@@ -21,11 +21,11 @@ export default {
     } as any,
     SIGNED_HEX_TRANSACTION:
         '0a85010a02380a220830202d4c1473d46640d8edabfea72f5a67080112630a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412320a1541fbbb1a37f9fbc18a3e2b8fd8c0823251cd3b8ee8121541af4852489314e72ffae825238c52d0e1ffff1ead18c0843d70f182cffca72f1241fa301a789dc51714be33b0f298e3f990650bec285ab628ab8ea5f18aeb3466643ca89b604d9df74fa19a11235e0d7ab974322f0097eefe0b7efb38ea9ce4cf6601',
-    TEST_TRON_GRID_API: 'http://47.252.84.138:29086',
-    TEST_TRON_HEADER_API_KEY: 'be815f09-e30f-4b98-b84d-0bb41f0708fd',
-    TEST_TRON_HEADER_API_JWT_KEY: '95057b57-a2bd-4bd5-9337-5b52cb2b3bc2',
-    TEST_TRON_HEADER_JWT_ID: '2b3b8c99254f48ef90be2dee387fe7b6',
-    TEST_TRON_HEADER_JWT_PRIVATE_KEY: `-----BEGIN RSA PRIVATE KEY-----
+    TEST_LINDA_GRID_API: 'http://47.252.84.138:29086',
+    TEST_LINDA_HEADER_API_KEY: 'be815f09-e30f-4b98-b84d-0bb41f0708fd',
+    TEST_LINDA_HEADER_API_JWT_KEY: '95057b57-a2bd-4bd5-9337-5b52cb2b3bc2',
+    TEST_LINDA_HEADER_JWT_ID: '2b3b8c99254f48ef90be2dee387fe7b6',
+    TEST_LINDA_HEADER_JWT_PRIVATE_KEY: `-----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEAuU+RD27l1tYdSnjiySnqUjTkuHguJq21+nS+oYIqiwHXLQot
 AC9vriP5sOXJ9w1SmWvj5JOmO2qYFxyO+zluW2vfPphXB2jPD0Fv2Cl/Cdef/SCg
 UR+KtGjMDudR/xgJcm9nZQ7pXcSi5rBXxQ9oIcLDxyU2wwXkGR9hJyIwqLkaP7nK
@@ -64,15 +64,15 @@ Djyb5403LJztsxdExbyQkm++Gg631CZus4xA77wMafGw37IhCE6sTBo=
             saleEnd: Date.now() + 60000, // 1 minute
             frozenAmount: 5,
             frozenDuration: 1,
-            trxRatio: 10,
+            lindRatio: 10,
             tokenRatio: 2,
             saleStart: Date.now() + 500,
             freeBandwidth: 100,
             freeBandwidthLimit: 1000,
         } as any;
     },
-    isProposalApproved: async (tronWeb: TronWeb, proposal: string | number) => {
-        const chainParameters = await tronWeb.trx.getChainParameters();
+    isProposalApproved: async (lindaWeb: LindaWeb, proposal: string | number) => {
+        const chainParameters = await lindaWeb.lind.getChainParameters();
         for (const param of chainParameters) {
             if (param.key === proposal) {
                 return param.value;
@@ -82,13 +82,13 @@ Djyb5403LJztsxdExbyQkm++Gg631CZus4xA77wMafGw37IhCE6sTBo=
     },
     SUN_NETWORK: process.env.SUN_NETWORK,
     SIDE_CHAIN: {
-        fullNode: 'https://testhttpapi.tronex.io',
-        solidityNode: 'https://testhttpapi.tronex.io',
-        eventServer: 'https://testhttpapi.tronex.io',
+        fullNode: 'https://testhttpapi.lindaex.io',
+        solidityNode: 'https://testhttpapi.lindaex.io',
+        eventServer: 'https://testhttpapi.lindaex.io',
         sideOptions: {
-            fullNode: 'https://suntest.tronex.io',
-            solidityNode: 'https://suntest.tronex.io',
-            eventServer: 'https://suntest.tronex.io',
+            fullNode: 'https://suntest.lindaex.io',
+            solidityNode: 'https://suntest.lindaex.io',
+            eventServer: 'https://suntest.lindaex.io',
             mainGatewayAddress: 'TFLtPoEtVJBMcj6kZPrQrwEdM3W3shxsBU',
             sideGatewayAddress: 'TRDepx5KoQ8oNbFVZ5sogwUxtdYmATDRgX',
             sideChainId: '413AF23F37DA0D48234FDD43D89931E98E1144481B',

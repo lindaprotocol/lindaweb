@@ -20,11 +20,11 @@ export interface VoteInfo {
 
 export interface CreateSmartContractOptions extends TransactionCommonOptions {
     /**
-     * The maximum TRX burns for resource consumption（1TRX = 1,000,000SUN）.
+     * The maximum LIND burns for resource consumption（1LIND = 1,000,000SUN）.
      */
     feeLimit?: number;
     /**
-     * The TRX transfer to the contract for each call（1TRX = 1,000,000SUN）
+     * The LIND transfer to the contract for each call（1LIND = 1,000,000SUN）
      */
     callValue?: number;
     /**
@@ -81,11 +81,11 @@ export interface CreateSmartContractOptions extends TransactionCommonOptions {
 
 export interface TriggerSmartContractOptions extends TransactionCommonOptions {
     /**
-     * The maximum TRX burns for resource consumption in SUN（1TRX = 1,000,000SUN）.
+     * The maximum LIND burns for resource consumption in SUN（1LIND = 1,000,000SUN）.
      */
     feeLimit?: number;
     /**
-     * The TRX transfer to the contract for each call in SUN（1TRX = 1,000,000SUN）
+     * The LIND transfer to the contract for each call in SUN（1LIND = 1,000,000SUN）
      */
     callValue?: number;
     /**
@@ -172,12 +172,12 @@ export interface CreateTokenOptions extends TransactionCommonOptions {
      */
     totalSupply: number;
     /**
-     * Define the price by the ratio of trx_num/num.
+     * Define the price by the ratio of lind_num/num.
      * Default is 1.
      */
-    trxRatio: number;
+    lindRatio: number;
     /**
-     * Define the price by the ratio of trx_num/num.
+     * Define the price by the ratio of lind_num/num.
      * Default is 1.
      */
     tokenRatio: number;
@@ -260,7 +260,7 @@ export interface DeployConstantContractOptions {
      */
     tokenValue?: string | number;
     /**
-     * Amount of TRX transferred with this transaction, measured in SUN (1TRX = 1,000,000 SUN).
+     * Amount of LIND transferred with this transaction, measured in SUN (1LIND = 1,000,000 SUN).
      */
     callValue?: number;
     /**

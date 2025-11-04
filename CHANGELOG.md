@@ -6,18 +6,18 @@ __6.0.4__
 ## New Features
 - Improve type inference in `Contract` module when using typescript.
     - The `Contract` now infers method signatures based on the provided ABI.
-    - To enable accurate inference, the ABI should be defined using the `as const` assertion or passed directly into tronWeb.contract().
+    - To enable accurate inference, the ABI should be defined using the `as const` assertion or passed directly into lindaWeb.contract().
 
 ## Change
 - Change the return behavior of the `contract.new()` method.
-    - Previously, this method mutated the current instance and used the ABI stored on the Tron blockchain, which proved to be unreliable. It now returns a new instance that uses the ABI provided in the options parameter.
+    - Previously, this method mutated the current instance and used the ABI stored on the Linda blockchain, which proved to be unreliable. It now returns a new instance that uses the ABI provided in the options parameter.
 - Export `GetEventResultOptions` and `EventResponse`.
 - Allow using length as the value of the name field in the ABI, but you cannot use `result['length']` to read its value.
 - Bump `axios` from 1.8.3 to 1.11.0, bump `eslint` from 9.22.0 to 9.31.0.
 
 ## Bug Fixes
-- Fix the issue where `addUpdateData` treats numeric strings as numbers.[#629](https://github.com/tronprotocol/tronweb/issues/629)
-    - Starting from TronWeb v6.0.4, `addUpdateData` will use `TronWeb.fromUtf8` to convert the provided data string—unless it starts with '0x'.
+- Fix the issue where `addUpdateData` treats numeric strings as numbers.[#629](https://github.com/lindaprotocol/lindaweb/issues/629)
+    - Starting from LindaWeb v6.0.4, `addUpdateData` will use `LindaWeb.fromUtf8` to convert the provided data string—unless it starts with '0x'.
     - If the resulting data string has an odd length, a '0' will be prepended to ensure even length.
 
 __6.0.3__
@@ -33,26 +33,26 @@ __6.0.2__
 
 __6.0.1__
 - Support deserialize TriggerSmartContract transaction by raw_data_hex.
-- Replace `@tronweb3/google-protobuf` with `google-protobuf`.
+- Replace `@lindaweb3/google-protobuf` with `google-protobuf`.
 - Fix some type errors and API return type compatibility issues.
 
 __6.0.0__
-- Fix [issue543](https://github.com/tronprotocol/tronweb/issues/543), replace type AxiosHeaders with InstanceType<typeof AxiosHeaders>.
+- Fix [issue543](https://github.com/lindaprotocol/lindaweb/issues/543), replace type AxiosHeaders with InstanceType<typeof AxiosHeaders>.
 - Add type for value field in the return of the creation by TransactionBuilder methods.
 - Fix known type errors.
 - Bump axios from 1.6.8 to 1.7.4 and webpack from 5.78.0 to 5.94.0.
-- Add TronWeb.address.toChecksumAddress and TronWeb.address.isChecksumAddress APIs.
-- Fix the wrong action of `deocdeInput` API in Contract module. [#557](https://github.com/tronprotocol/tronweb/issues/557)
+- Add LindaWeb.address.toChecksumAddress and LindaWeb.address.isChecksumAddress APIs.
+- Fix the wrong action of `deocdeInput` API in Contract module. [#557](https://github.com/lindaprotocol/lindaweb/issues/557)
 
 __6.0.0-beta.4__
 - Replace `ethers@v5/abi` with abiCoder of `ethers@v6`.
 - Bump ethers from v6.11.1 to v6.13.1.
 - Export all Types and enum objects.
 - Move `typescript` and other dev dependencies into `devDependencies` field in package.json.
-- Change headers type in TronWeb constructor.
+- Change headers type in LindaWeb constructor.
 
 __6.0.0-beta.3__
-- Support recovering transaction signer address by `trx.ecRecover`.
+- Support recovering transaction signer address by `lind.ecRecover`.
 - Support both base58 format and hex format address field in keys of `updateAccountPermissions` params.
 - Support type for contract instance.
 
@@ -62,30 +62,30 @@ __6.0.0-beta.2__
 - Bump axios from 1.6.2 to 1.6.8
 
 __6.0.0-beta.1__
-- Support [TIP586](https://github.com/tronprotocol/tips/blob/master/tip-586.md) with `trx.getBandwidthPrices` and `trx.getEnergyPrices`.
+- Support [TIP586](https://github.com/lindaprotocol/tips/blob/master/tip-586.md) with `lind.getBandwidthPrices` and `lind.getEnergyPrices`.
 - Support custom block header info when creating transaction.
 
 __6.0.0-beta.0__
 - Add full type definition for Typescript.
 - Change Default exports to Named exports.
-- Change `TronWeb.createRandom(options)` to `TronWeb.createRandom(password, path, wordlist)`.
-- Change `TronWeb.fromMnemonic(mnemonic, path, wordlist)` to `TronWeb.fromMnemonic(mnemonic, path, password, wordlist)`.
-- All methods in `Trx` and `TransactionBuilder` perform an strict check for type and position of parameters.
-- All methods in TronWeb will throw an `Error` instance instead of a string. `e.message` should be used to access error information.
-- Update `TronWeb#event` API with new backend service([#422](https://github.com/tronprotocol/tronweb/issues/422)).
+- Change `LindaWeb.createRandom(options)` to `LindaWeb.createRandom(password, path, wordlist)`.
+- Change `LindaWeb.fromMnemonic(mnemonic, path, wordlist)` to `LindaWeb.fromMnemonic(mnemonic, path, password, wordlist)`.
+- All methods in `Lind` and `TransactionBuilder` perform an strict check for type and position of parameters.
+- All methods in LindaWeb will throw an `Error` instance instead of a string. `e.message` should be used to access error information.
+- Update `LindaWeb#event` API with new backend service([#422](https://github.com/lindaprotocol/lindaweb/issues/422)).
 - Remove `Contract#watch()` method.
-- Support multi-dimension address array parameters in `TransactionBuilder#triggerSmartContract()`([#433](https://github.com/tronprotocol/tronweb/issues/433)).
+- Support multi-dimension address array parameters in `TransactionBuilder#triggerSmartContract()`([#433](https://github.com/lindaprotocol/lindaweb/issues/433)).
 
 __5.3.2__
 - Add custom block header argument for building transactions locally in `transactionBuilder` lib
-- Support [TIP586](https://github.com/tronprotocol/tips/blob/master/tip-586.md) by `trx.getBandwidthPrices` and `trx.getEnergyPrices`
-- Support recover transaction signer address by `trx.ecRecover`
-- Support multi-dimension address array such as `address[][]` for ABI params encoding  in `triggerSmartContract` and `createSmartContract`  [#433](https://github.com/tronprotocol/tronweb/issues/433)
-- Fix error when `triggerSmartContract` with error address due to the undefined callback [#429](https://github.com/tronprotocol/tronweb/issues/429)
-- Bump axios from 0.26.1 to 1.6.2 [#445](https://github.com/tronprotocol/tronweb/issues/445)
+- Support [TIP586](https://github.com/lindaprotocol/tips/blob/master/tip-586.md) by `lind.getBandwidthPrices` and `lind.getEnergyPrices`
+- Support recover transaction signer address by `lind.ecRecover`
+- Support multi-dimension address array such as `address[][]` for ABI params encoding  in `triggerSmartContract` and `createSmartContract`  [#433](https://github.com/lindaprotocol/lindaweb/issues/433)
+- Fix error when `triggerSmartContract` with error address due to the undefined callback [#429](https://github.com/lindaprotocol/lindaweb/issues/429)
+- Bump axios from 0.26.1 to 1.6.2 [#445](https://github.com/lindaprotocol/lindaweb/issues/445)
 
 __5.3.1__
--   Fix `getBlockRange()` error for range of 1 ([#398](https://github.com/tronprotocol/tronweb/issues/398)).
+-   Fix `getBlockRange()` error for range of 1 ([#398](https://github.com/lindaprotocol/lindaweb/issues/398)).
 -  Add support for `estimateenergy` in  `TransactionBuilder#deployConstantContract()` API.
 
 __5.3.0__
@@ -93,9 +93,9 @@ __5.3.0__
 - Bump ethers to ^6.6.0
 - Optimize argument validation for `createToken`, `updateToken` and `applyForSR` 
 - callValue can be 0 when the contract constructor is payable
-- Support shouldPollResponse to customize poll times ([#368](https://github.com/tronprotocol/tronweb/issues/368))
-- Support [Tip541](https://github.com/tronprotocol/tips/issues/541) by `transactionBuilder.cancelUnfreezeBalanceV2`
-- Support [Tip542](https://github.com/tronprotocol/tips/issues/542) by adding a parameter in `transactionBuilder.delegateResource`
+- Support shouldPollResponse to customize poll times ([#368](https://github.com/lindaprotocol/lindaweb/issues/368))
+- Support [Tip541](https://github.com/lindaprotocol/tips/issues/541) by `transactionBuilder.cancelUnfreezeBalanceV2`
+- Support [Tip542](https://github.com/lindaprotocol/tips/issues/542) by adding a parameter in `transactionBuilder.delegateResource`
 - Support estimate the energy used in contract deployment by `transactionBuilder.deployConstantContract`
 
 __5.2.0__
@@ -104,19 +104,19 @@ __5.2.0__
 
 __5.1.0__
 - Add `freezeBalanceV2`, `unfreezeBalanceV2`, `delegateResource`, `undelegateResource` and `withdrawExpireUnfreeze` function in transactiobBuiler lib to support stakeV2 
-- Support `tronWeb.transactionBuilder.estimateEnergy` to estimate energy for triggersmartcontract transaction
+- Support `lindaWeb.transactionBuilder.estimateEnergy` to estimate energy for triggersmartcontract transaction
 - Add `getDelegatedResourceV2`, `getDelegatedResourceAccountIndexV2`, `getCanDelegatedMaxSize`, `getAvailableUnfreezeCount` and `getCanWithdrawUnfreezeAmount` function to query account resource info
 
 __5.0.0__
-- Add `tronWeb.utils.transaction` lib to serialize and deserialize transaction 
-- Add `tronWeb.utils.transaction.txJsonToPb` function to convert transaction json to protobuf
-- Add `tronWeb.utils.transaction.txPbToTxID` function to get txID from transaction protobuf
+- Add `lindaWeb.utils.transaction` lib to serialize and deserialize transaction 
+- Add `lindaWeb.utils.transaction.txJsonToPb` function to convert transaction json to protobuf
+- Add `lindaWeb.utils.transaction.txPbToTxID` function to get txID from transaction protobuf
 - Support new transaction builder `createAccount` 
 
 __4.4.0__
 - Support `createRandom` and `fromMnemonic` function
-- Add `tronWeb.utils.message` lib, which includes `hashMessage`, `signMessage` and `verifyMessage`
-- Add `signMessageV2` and `verifyMessageV2` in `tronWeb.trx` lib which can support plain text signature and verification
+- Add `lindaWeb.utils.message` lib, which includes `hashMessage`, `signMessage` and `verifyMessage`
+- Add `signMessageV2` and `verifyMessageV2` in `lindaWeb.lind` lib which can support plain text signature and verification
 - Add `size` filter for event watch 
 
 __4.3.0__
@@ -130,7 +130,7 @@ __4.2.0__
 - Update `puppeteer` to version 13.5.1
 
 __4.1.0__
-- Add `encodeParamsV2ByABI` and `decodeParamsV2ByABI` functions in `tronWeb.utils.abi` lib
+- Add `encodeParamsV2ByABI` and `decodeParamsV2ByABI` functions in `lindaWeb.utils.abi` lib
 - Support abi v2 for `triggerSmartContract`, `createSmartContract`, `call` and `send` methods
 - Update `validator` to version 13.7.0
 - Update `axios` to version 0.24.0
@@ -156,17 +156,17 @@ __3.2.6__
 - Add setHeader function
 
 __3.2.5__
-- Set feeLimit max value as 5000 TRX
+- Set feeLimit max value as 5000 LIND
 
 __3.2.4__
-- Set feeLimit default value as 150 TRX
+- Set feeLimit default value as 150 LIND
 
 __3.2.3__
 - Support triggerSmartContract function with empty character functionSelector and empty array parameters
 - The triggerSmartContract function Support for anonymous contract parameter incoming
 
 __3.2.2__
-- Set feeLimit default value as 40 TRX
+- Set feeLimit default value as 40 LIND
 - The `createToken` method supports 0 in its precision
 
 __3.1.0__
@@ -176,7 +176,7 @@ __3.1.0__
 
 __3.0.0__
 - Support sidechain for SunNetwork
-- Set feeLimit default value as 20 TRX
+- Set feeLimit default value as 20 LIND
 
 __2.10.2__
 - Support toHex function with a space and empty character as parameter
@@ -185,10 +185,10 @@ __2.10.2__
 - Fix start method returned from watch is undefined #45
 
 __2.10.1__
-* Fix `trx.listExchangesPaginated`
+* Fix `lind.listExchangesPaginated`
 
 __2.10.0__
-* Fix `trx.getTokenListByName`
+* Fix `lind.getTokenListByName`
 
 __2.9.0__
 * Support smart contracts with function that requires an array of addresses as a parameter, included the constructor during the deployment
@@ -197,13 +197,13 @@ __2.8.1__
 * Add options `keepTxID` to show also the txID when triggering a contract with `shouldPollResponse`
 
 __2.8.0__
-* Improve in the plugin architecture allows someone to implement a full lib at the same level of Trx and TransactionBuilder
+* Improve in the plugin architecture allows someone to implement a full lib at the same level of Lind and TransactionBuilder
 
 __2.7.4__
-* Fix bugs of trx.getBrokerage and trx.getReward function
+* Fix bugs of lind.getBrokerage and lind.getReward function
 
 __2.7.3__
-* Support new apis related to Java-Tron 3.6.5
+* Support new apis related to Java-Linda 3.6.5
 * Original withdrawBlockRewards method support to withdraw user's reward
 
 __2.6.8__
@@ -226,10 +226,10 @@ __2.5.5__
 * Ignore `receiverAddress` during `freezeBalance` and `unfreezeBalance` if it is equal to the owner address
 
 __2.5.4__
-* Adds cache in Trx to cache Contracts locally and make the process more efficient
+* Adds cache in Lind to cache Contracts locally and make the process more efficient
 
 __2.5.2__
-* Adds static methods `Trx.signString` and `Trx.verifySignature`
+* Adds static methods `Lind.signString` and `Lind.verifySignature`
 
 __2.5.0__
 * Allows freeBandwidth, freeBandwidthLimit, frozenAmount and frozenDuration to be zero
@@ -238,7 +238,7 @@ __2.3.7__
 * Get rid of jssha to reduce the size of the package a little bit.
 
 __2.3.6__
-* Supports `/wallet/getapprovedlist` and `/wallet/getsignweight` JavaTron API.
+* Supports `/wallet/getapprovedlist` and `/wallet/getsignweight` JavaLinda API.
 * Adds test for multi-sign workflow.
 
 __2.3.5__
@@ -251,12 +251,12 @@ __2.3.3__
 * Adds filters during event watching.
 
 __2.3.2__
-* Removes mixed approach instantiating tronWeb. Before you could pass the servers as an object, and the privateKey as a separate parameter. Now, you pass them either in the options object or in the params.
+* Removes mixed approach instantiating lindaWeb. Before you could pass the servers as an object, and the privateKey as a separate parameter. Now, you pass them either in the options object or in the params.
 
 __2.3.1__
 * Adds support for not-tld domain, like http://localhost
 * Improve the new format, allow passing the privateKey as a property in the option object
 
 __2.3.0__
-* Introduces new format to instantiate tronWeb, passing an options object instead that `fullNode`, `solidityNode` and `eventServer` as separate params
+* Introduces new format to instantiate lindaWeb, passing an options object instead that `fullNode`, `solidityNode` and `eventServer` as separate params
 * Fixes bug in `_watch` which causes a continuous update of the `since` parameter

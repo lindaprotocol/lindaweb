@@ -5,7 +5,7 @@ import HttpProvider from '../lib/providers/HttpProvider.js';
 
 export type IBigNumber = InstanceType<typeof BigNumber>;
 
-export interface TronWebOptions {
+export interface LindaWebOptions {
     fullNode?: NodeProvider;
     solidityNode?: NodeProvider;
     fullHost?: NodeProvider;

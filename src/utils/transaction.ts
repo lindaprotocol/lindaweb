@@ -2,8 +2,8 @@
 // @ts-nocheck
 import google_protobuf_any_pb from 'google-protobuf/google/protobuf/any_pb.js';
 
-import '../protocol/core/Tron_pb.cjs';
-const { Transaction, Permission, Key } = globalThis.TronWebProto;
+import '../protocol/core/Linda_pb.cjs';
+const { Transaction, Permission, Key } = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/balance_contract_pb.cjs';
 const {
@@ -17,10 +17,10 @@ const {
     WithdrawExpireUnfreezeContract,
     DelegateResourceContract,
     UnDelegateResourceContract,
-} = globalThis.TronWebProto;
+} = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/asset_issue_contract_pb.cjs';
-const { TransferAssetContract, ParticipateAssetIssueContract, AssetIssueContract, UpdateAssetContract } = globalThis.TronWebProto;
+const { TransferAssetContract, ParticipateAssetIssueContract, AssetIssueContract, UpdateAssetContract } = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/smart_contract_pb.cjs';
 const {
@@ -30,38 +30,38 @@ const {
     UpdateSettingContract,
     CreateSmartContract,
     SmartContract,
-} = globalThis.TronWebProto;
+} = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/common_pb.cjs';
-const { ResourceCode } = globalThis.TronWebProto;
+const { ResourceCode } = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/witness_contract_pb.cjs';
-const { WitnessCreateContract, VoteWitnessContract } = globalThis.TronWebProto;
+const { WitnessCreateContract, VoteWitnessContract } = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/storage_contract_pb.cjs';
-const { UpdateBrokerageContract } = globalThis.TronWebProto;
+const { UpdateBrokerageContract } = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/account_contract_pb.cjs';
 const { AccountCreateContract, AccountUpdateContract, SetAccountIdContract, AccountPermissionUpdateContract } =
-    globalThis.TronWebProto;
+    globalThis.LindaWebProto;
 
 import '../protocol/core/contract/proposal_contract_pb.cjs';
-const { ProposalCreateContract, ProposalDeleteContract, ProposalApproveContract } = globalThis.TronWebProto;
+const { ProposalCreateContract, ProposalDeleteContract, ProposalApproveContract } = globalThis.LindaWebProto;
 
 import '../protocol/core/contract/exchange_contract_pb.cjs';
 const { ExchangeCreateContract, ExchangeInjectContract, ExchangeWithdrawContract, ExchangeTransactionContract } =
-    globalThis.TronWebProto;
+    globalThis.LindaWebProto;
 
 import { byteArray2hexStr } from './bytes.js';
 import { hexStr2byteArray } from './code.js';
 import { sha256, keccak256 } from './ethersUtils.js';
-import TronWeb from '../tronweb.js';
+import LindaWeb from '../lindaweb.js';
 import { isHex } from './validations.js';
 
 const fromHexString = (hexString: string) => {
     if (!hexString || hexString.length === 0) return new Uint8Array([]);
     return new Uint8Array(
-        TronWeb.address
+        LindaWeb.address
             .toHex(hexString)
             .match(/.{1,2}/g)
             .map((byte: string) => parseInt(byte, 16))
@@ -71,7 +71,7 @@ const fromHexString = (hexString: string) => {
 const stringToUint8Array = (hexString: string) => {
     if (!hexString || hexString.length === 0) return new Uint8Array([]);
     return new Uint8Array(
-        (isHex(hexString) ? hexString : TronWeb.toHex(hexString))
+        (isHex(hexString) ? hexString : LindaWeb.toHex(hexString))
             .replace(/^0x/, '')
             .match(/.{1,2}/g)
             .map((byte: string) => parseInt(byte, 16))
@@ -80,7 +80,7 @@ const stringToUint8Array = (hexString: string) => {
 
 const flexToUint8Array = (str: string, visible: boolean) => {
     if (!visible) return stringToUint8Array(str.replace(/^0x/, ''));
-    return stringToUint8Array(TronWeb.fromUtf8(str).replace(/^0x/, ''));
+    return stringToUint8Array(LindaWeb.fromUtf8(str).replace(/^0x/, ''));
 };
 
 const sha3 = (string: string, prefix = true) => {
@@ -103,7 +103,7 @@ const buildCommonTransaction = (message, contractType, typeName, permissionId) =
     return transaction;
 };
 
-// wallet/createtransaction for sendTrx
+// wallet/createtransaction for sendLind
 const buildTransferContract = (value, options) => {
     const { to_address, owner_address, amount } = value;
     const transferContract = new TransferContract();
@@ -515,7 +515,7 @@ const buildAssetIssueContract = (value, options) => {
         description,
         url,
         total_supply,
-        trx_num,
+        lind_num,
         num,
         start_time,
         end_time,
@@ -539,7 +539,7 @@ const buildAssetIssueContract = (value, options) => {
     assetIssueContract.setNum(num);
     assetIssueContract.setEndTime(end_time);
     assetIssueContract.setStartTime(start_time);
-    assetIssueContract.setTrxNum(trx_num);
+    assetIssueContract.setLindNum(lind_num);
     assetIssueContract.setVoteScore(vote_score);
     if (precision) {
         assetIssueContract.setPrecision(precision);

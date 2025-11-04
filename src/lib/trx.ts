@@ -1,4 +1,4 @@
-import { TronWeb } from '../tronweb.js';
+import { LindaWeb } from '../lindaweb.js';
 import utils from '../utils/index.js';
 import { keccak256, toUtf8Bytes, recoverAddress, SigningKey, Signature } from '../utils/ethersUtils.js';
 import { ADDRESS_PREFIX, toHex } from '../utils/address.js';
@@ -21,34 +21,34 @@ import {
     Address,
     Exchange,
     TransactionInfo,
-} from '../types/Trx.js';
+} from '../types/Lind.js';
 import { SignedTransaction, Transaction } from '../types/Transaction.js';
 import { TypedDataDomain, TypedDataField } from '../utils/typedData.js';
 import { Resource } from '../types/TransactionBuilder.js';
 
-const TRX_MESSAGE_HEADER = '\x19TRON Signed Message:\n32';
-// it should be: '\x15TRON Signed Message:\n32';
+const LIND_MESSAGE_HEADER = '\x19LINDA Signed Message:\n32';
+// it should be: '\x15LINDA Signed Message:\n32';
 const ETH_MESSAGE_HEADER = '\x19Ethereum Signed Message:\n32';
 
 type SignedStringOrSignedTransaction<T extends string | Transaction | SignedTransaction> = T extends string
     ? string
     : SignedTransaction & T;
 
-export class Trx {
-    private tronWeb: TronWeb;
+export class Lind {
+    private lindaWeb: LindaWeb;
     private cache: { contracts: Record<string, any> };
     private validator: Validator;
 
     signMessage;
     sendAsset;
     send;
-    sendTrx;
+    sendLind;
     broadcast;
     broadcastHex;
     signTransaction;
 
-    constructor(tronWeb: TronWeb) {
-        this.tronWeb = tronWeb;
+    constructor(lindaWeb: LindaWeb) {
+        this.lindaWeb = lindaWeb;
 
         this.cache = {
             contracts: {},
@@ -57,7 +57,7 @@ export class Trx {
         this.signMessage = this.sign;
         this.sendAsset = this.sendToken;
         this.send = this.sendTransaction;
-        this.sendTrx = this.sendTransaction;
+        this.sendLind = this.sendTransaction;
         this.broadcast = this.sendRawTransaction;
         this.broadcastHex = this.sendHexTransaction;
         this.signTransaction = this.sign;
@@ -66,22 +66,22 @@ export class Trx {
     _parseToken(token: any): Token {
         return {
             ...token,
-            name: this.tronWeb.toUtf8(token.name),
-            abbr: token.abbr && this.tronWeb.toUtf8(token.abbr),
-            description: token.description && this.tronWeb.toUtf8(token.description),
-            url: token.url && this.tronWeb.toUtf8(token.url),
+            name: this.lindaWeb.toUtf8(token.name),
+            abbr: token.abbr && this.lindaWeb.toUtf8(token.abbr),
+            description: token.description && this.lindaWeb.toUtf8(token.description),
+            url: token.url && this.lindaWeb.toUtf8(token.url),
         };
     }
 
     getCurrentBlock(): Promise<Block> {
-        return this.tronWeb.fullNode.request('wallet/getnowblock');
+        return this.lindaWeb.fullNode.request('wallet/getnowblock');
     }
 
     getConfirmedCurrentBlock(): Promise<Block> {
-        return this.tronWeb.solidityNode.request('walletsolidity/getnowblock');
+        return this.lindaWeb.solidityNode.request('walletsolidity/getnowblock');
     }
 
-    async getBlock(block: 'earliest' | 'latest' | number | string | false = this.tronWeb.defaultBlock): Promise<Block> {
+    async getBlock(block: 'earliest' | 'latest' | number | string | false = this.lindaWeb.defaultBlock): Promise<Block> {
         if (block === false) {
             throw new Error('No block identifier provided');
         }
@@ -96,7 +96,7 @@ export class Trx {
     }
 
     async getBlockByHash(blockHash: string): Promise<Block> {
-        const block = await this.tronWeb.fullNode.request<Block>(
+        const block = await this.lindaWeb.fullNode.request<Block>(
             'wallet/getblockbyid',
             {
                 value: blockHash,
@@ -114,7 +114,7 @@ export class Trx {
             throw new Error('Invalid block number provided');
         }
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<Block>(
                 'wallet/getblockbynum',
                 {
@@ -132,14 +132,14 @@ export class Trx {
     }
 
     async getBlockTransactionCount(
-        block: 'earliest' | 'latest' | number | string | false = this.tronWeb.defaultBlock
+        block: 'earliest' | 'latest' | number | string | false = this.lindaWeb.defaultBlock
     ): Promise<number> {
         const { transactions = [] } = await this.getBlock(block);
         return transactions.length;
     }
 
     async getTransactionFromBlock(
-        block: 'earliest' | 'latest' | number | string | false = this.tronWeb.defaultBlock,
+        block: 'earliest' | 'latest' | number | string | false = this.lindaWeb.defaultBlock,
         index: number
     ): Promise<GetTransactionResponse> {
         const { transactions } = await this.getBlock(block);
@@ -151,7 +151,7 @@ export class Trx {
     }
 
     async getTransactionsFromBlock(
-        block: 'earliest' | 'latest' | number | string | false = this.tronWeb.defaultBlock
+        block: 'earliest' | 'latest' | number | string | false = this.lindaWeb.defaultBlock
     ): Promise<GetTransactionResponse[]> {
         const { transactions } = await this.getBlock(block);
         if (!transactions) {
@@ -161,7 +161,7 @@ export class Trx {
     }
 
     async getTransaction(transactionID: string): Promise<GetTransactionResponse> {
-        const transaction = await this.tronWeb.fullNode.request<GetTransactionResponse>(
+        const transaction = await this.lindaWeb.fullNode.request<GetTransactionResponse>(
             'wallet/gettransactionbyid',
             {
                 value: transactionID,
@@ -175,7 +175,7 @@ export class Trx {
     }
 
     async getConfirmedTransaction(transactionID: string): Promise<GetTransactionResponse> {
-        const transaction = await this.tronWeb.solidityNode.request<GetTransactionResponse>(
+        const transaction = await this.lindaWeb.solidityNode.request<GetTransactionResponse>(
             'walletsolidity/gettransactionbyid',
             {
                 value: transactionID,
@@ -189,28 +189,28 @@ export class Trx {
     }
 
     getUnconfirmedTransactionInfo(transactionID: string): Promise<TransactionInfo> {
-        return this.tronWeb.fullNode.request('wallet/gettransactioninfobyid', { value: transactionID }, 'post');
+        return this.lindaWeb.fullNode.request('wallet/gettransactioninfobyid', { value: transactionID }, 'post');
     }
 
     getTransactionInfo(transactionID: string): Promise<TransactionInfo> {
-        return this.tronWeb.solidityNode.request('walletsolidity/gettransactioninfobyid', { value: transactionID }, 'post');
+        return this.lindaWeb.solidityNode.request('walletsolidity/gettransactioninfobyid', { value: transactionID }, 'post');
     }
 
-    getTransactionsToAddress(address = this.tronWeb.defaultAddress.hex, limit = 30, offset = 0): Promise<GetTransactionResponse[]> {
+    getTransactionsToAddress(address = this.lindaWeb.defaultAddress.hex, limit = 30, offset = 0): Promise<GetTransactionResponse[]> {
         return this.getTransactionsRelated(toHex(address as string), 'to', limit, offset);
     }
 
-    getTransactionsFromAddress(address = this.tronWeb.defaultAddress.hex, limit = 30, offset = 0): Promise<GetTransactionResponse[]> {
+    getTransactionsFromAddress(address = this.lindaWeb.defaultAddress.hex, limit = 30, offset = 0): Promise<GetTransactionResponse[]> {
         return this.getTransactionsRelated(toHex(address as string), 'from', limit, offset);
     }
 
     async getTransactionsRelated(
-        address = this.tronWeb.defaultAddress.hex,
+        address = this.lindaWeb.defaultAddress.hex,
         direction = 'all',
         limit = 30,
         offset = 0
     ): Promise<GetTransactionResponse[]> {
-        if (this.tronWeb.fullnodeSatisfies('>=4.1.1')) {
+        if (this.lindaWeb.fullnodeSatisfies('>=4.1.1')) {
             throw new Error('This api is not supported any more');
         }
 
@@ -232,7 +232,7 @@ export class Trx {
             });
         }
 
-        if (!this.tronWeb.isAddress(address as string)) {
+        if (!this.lindaWeb.isAddress(address as string)) {
             throw new Error('Invalid address provided');
         }
 
@@ -246,7 +246,7 @@ export class Trx {
 
         address = toHex(address as string);
 
-        return this.tronWeb.solidityNode
+        return this.lindaWeb.solidityNode
             .request<{ transaction: GetTransactionResponse[] }>(
                 `walletextension/gettransactions${direction}this`,
                 {
@@ -263,14 +263,14 @@ export class Trx {
             });
     }
 
-    async getAccount(address = this.tronWeb.defaultAddress.hex): Promise<Account> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+    async getAccount(address = this.lindaWeb.defaultAddress.hex): Promise<Account> {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
         address = toHex(address as string);
 
-        return this.tronWeb.solidityNode.request(
+        return this.lindaWeb.solidityNode.request(
             'walletsolidity/getaccount',
             {
                 address,
@@ -303,7 +303,7 @@ export class Trx {
             id = id.slice(2);
         }
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
             `wallet${options.confirmed ? 'solidity' : ''}/getaccountbyid`,
             {
                 account_id: id,
@@ -312,19 +312,19 @@ export class Trx {
         );
     }
 
-    async getBalance(address = this.tronWeb.defaultAddress.hex): Promise<number> {
+    async getBalance(address = this.lindaWeb.defaultAddress.hex): Promise<number> {
         const { balance = 0 } = await this.getAccount(address);
         return balance;
     }
 
-    async getUnconfirmedAccount(address = this.tronWeb.defaultAddress.hex): Promise<Account> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+    async getUnconfirmedAccount(address = this.lindaWeb.defaultAddress.hex): Promise<Account> {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
         address = toHex(address as string);
 
-        return this.tronWeb.fullNode.request(
+        return this.lindaWeb.fullNode.request(
             'wallet/getaccount',
             {
                 address,
@@ -337,19 +337,19 @@ export class Trx {
         return this.getAccountInfoById(id, { confirmed: false });
     }
 
-    async getUnconfirmedBalance(address = this.tronWeb.defaultAddress.hex): Promise<number> {
+    async getUnconfirmedBalance(address = this.lindaWeb.defaultAddress.hex): Promise<number> {
         const { balance = 0 } = await this.getUnconfirmedAccount(address);
         return balance;
     }
 
-    async getBandwidth(address = this.tronWeb.defaultAddress.hex): Promise<number> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+    async getBandwidth(address = this.lindaWeb.defaultAddress.hex): Promise<number> {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
         address = toHex(address as string);
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<AccountNetMessage>(
                 'wallet/getaccountnet',
                 {
@@ -362,14 +362,14 @@ export class Trx {
             });
     }
 
-    async getTokensIssuedByAddress(address = this.tronWeb.defaultAddress.hex): Promise<Record<string, Token>> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+    async getTokensIssuedByAddress(address = this.lindaWeb.defaultAddress.hex): Promise<Record<string, Token>> {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
         address = toHex(address as string);
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<{ assetIssue: Token[] }>(
                 'wallet/getassetissuebyaccount',
                 {
@@ -399,11 +399,11 @@ export class Trx {
             throw new Error('Invalid token ID provided');
         }
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<Token>(
                 'wallet/getassetissuebyname',
                 {
-                    value: this.tronWeb.fromUtf8(tokenID),
+                    value: this.lindaWeb.fromUtf8(tokenID),
                 },
                 'post'
             )
@@ -417,10 +417,10 @@ export class Trx {
     }
 
     async listNodes(): Promise<string[]> {
-        const { nodes = [] } = await this.tronWeb.fullNode.request<{ nodes: { address: { host: string; port: number } }[] }>(
+        const { nodes = [] } = await this.lindaWeb.fullNode.request<{ nodes: { address: { host: string; port: number } }[] }>(
             'wallet/listnodes'
         );
-        return nodes.map(({ address: { host, port } }) => `${this.tronWeb.toUtf8(host)}:${port}`);
+        return nodes.map(({ address: { host, port } }) => `${this.lindaWeb.toUtf8(host)}:${port}`);
     }
 
     async getBlockRange(start = 0, end = 30): Promise<Block[]> {
@@ -436,7 +436,7 @@ export class Trx {
             throw new Error('Invalid range size, which should be no more than 100.');
         }
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<{ block: Block[] }>(
                 'wallet/getblockbylimitnext',
                 {
@@ -449,7 +449,7 @@ export class Trx {
     }
 
     async listSuperRepresentatives(): Promise<Witness[]> {
-        const { witnesses = [] } = await this.tronWeb.fullNode.request<{ witnesses: Witness[] }>('wallet/listwitnesses');
+        const { witnesses = [] } = await this.lindaWeb.fullNode.request<{ witnesses: Witness[] }>('wallet/listwitnesses');
         return witnesses;
     }
 
@@ -463,12 +463,12 @@ export class Trx {
         }
 
         if (!limit) {
-            return this.tronWeb.fullNode
+            return this.lindaWeb.fullNode
                 .request<{ assetIssue: Token[] }>('wallet/getassetissuelist')
                 .then(({ assetIssue = [] }) => assetIssue.map((token) => this._parseToken(token)));
         }
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<{ assetIssue: Token[] }>(
                 'wallet/getpaginatedassetissuelist',
                 {
@@ -481,7 +481,7 @@ export class Trx {
     }
 
     async timeUntilNextVoteCycle(): Promise<number> {
-        const { num = -1 } = await this.tronWeb.fullNode.request<{ num: number }>('wallet/getnextmaintenancetime');
+        const { num = -1 } = await this.lindaWeb.fullNode.request<{ num: number }>('wallet/getnextmaintenancetime');
         if (num == -1) {
             throw new Error('Failed to get time until next vote cycle');
         }
@@ -489,7 +489,7 @@ export class Trx {
     }
 
     async getContract(contractAddress: string): Promise<any> {
-        if (!this.tronWeb.isAddress(contractAddress)) {
+        if (!this.lindaWeb.isAddress(contractAddress)) {
             throw new Error('Invalid contract address provided');
         }
 
@@ -499,7 +499,7 @@ export class Trx {
 
         contractAddress = toHex(contractAddress);
 
-        const contract = await this.tronWeb.fullNode.request<any>('wallet/getcontract', {
+        const contract = await this.lindaWeb.fullNode.request<any>('wallet/getcontract', {
             value: contractAddress,
         });
         if (contract.Error) {
@@ -510,7 +510,7 @@ export class Trx {
     }
 
     ecRecover(transaction: SignedTransaction) {
-        return Trx.ecRecover(transaction);
+        return Lind.ecRecover(transaction);
     }
 
     static ecRecover(transaction: SignedTransaction): Address | Address[] {
@@ -521,45 +521,45 @@ export class Trx {
             throw new Error('Transaction is not signed');
         }
         if (transaction.signature.length === 1) {
-            const tronAddress = ecRecover(transaction.txID, transaction.signature[0]);
-            return TronWeb.address.fromHex(tronAddress);
+            const lindaAddress = ecRecover(transaction.txID, transaction.signature[0]);
+            return LindaWeb.address.fromHex(lindaAddress);
         }
         return transaction.signature.map((sig) => {
-            const tronAddress = ecRecover(transaction.txID, sig);
-            return TronWeb.address.fromHex(tronAddress);
+            const lindaAddress = ecRecover(transaction.txID, sig);
+            return LindaWeb.address.fromHex(lindaAddress);
         });
     }
 
-    async verifyMessage(message: string, signature: string, address = this.tronWeb.defaultAddress.base58, useTronHeader = true) {
+    async verifyMessage(message: string, signature: string, address = this.lindaWeb.defaultAddress.base58, useLindaHeader = true) {
         if (!utils.isHex(message)) {
             throw new Error('Expected hex message input');
         }
 
-        if (Trx.verifySignature(message, address as string, signature, useTronHeader)) {
+        if (Lind.verifySignature(message, address as string, signature, useLindaHeader)) {
             return true;
         }
 
         throw new Error('Signature does not match');
     }
 
-    static verifySignature(message: string, address: string, signature: string, useTronHeader = true) {
+    static verifySignature(message: string, address: string, signature: string, useLindaHeader = true) {
         message = message.replace(/^0x/, '');
         const messageBytes = [
-            ...toUtf8Bytes(useTronHeader ? TRX_MESSAGE_HEADER : ETH_MESSAGE_HEADER),
+            ...toUtf8Bytes(useLindaHeader ? LIND_MESSAGE_HEADER : ETH_MESSAGE_HEADER),
             ...utils.code.hexStr2byteArray(message),
         ];
 
         const messageDigest = keccak256(new Uint8Array(messageBytes));
         const recovered = recoverAddress(messageDigest, Signature.from(`0x${signature.replace(/^0x/, '')}`));
 
-        const tronAddress = ADDRESS_PREFIX + recovered.substr(2);
-        const base58Address = TronWeb.address.fromHex(tronAddress);
+        const lindaAddress = ADDRESS_PREFIX + recovered.substr(2);
+        const base58Address = LindaWeb.address.fromHex(lindaAddress);
 
-        return base58Address == TronWeb.address.fromHex(address);
+        return base58Address == LindaWeb.address.fromHex(address);
     }
 
     async verifyMessageV2(message: string | Uint8Array | Array<number>, signature: string) {
-        return Trx.verifyMessageV2(message, signature);
+        return Lind.verifyMessageV2(message, signature);
     }
 
     static verifyMessageV2(message: string | Uint8Array | Array<number>, signature: string) {
@@ -571,9 +571,9 @@ export class Trx {
         types: Record<string, TypedDataField[]>,
         value: Record<string, any>,
         signature: string,
-        address = this.tronWeb.defaultAddress.base58
+        address = this.lindaWeb.defaultAddress.base58
     ) {
-        if (Trx.verifyTypedData(domain, types, value, signature, address as string)) return true;
+        if (Lind.verifyTypedData(domain, types, value, signature, address as string)) return true;
 
         throw new Error('Signature does not match');
     }
@@ -588,16 +588,16 @@ export class Trx {
         const messageDigest = utils._TypedDataEncoder.hash(domain, types, value);
         const recovered = recoverAddress(messageDigest, Signature.from(`0x${signature.replace(/^0x/, '')}`));
 
-        const tronAddress = ADDRESS_PREFIX + recovered.substr(2);
-        const base58Address = TronWeb.address.fromHex(tronAddress);
+        const lindaAddress = ADDRESS_PREFIX + recovered.substr(2);
+        const base58Address = LindaWeb.address.fromHex(lindaAddress);
 
-        return base58Address == TronWeb.address.fromHex(address);
+        return base58Address == LindaWeb.address.fromHex(address);
     }
 
     async sign<T extends SignedTransaction | Transaction | string>(
         transaction: T,
-        privateKey = this.tronWeb.defaultPrivateKey,
-        useTronHeader = true,
+        privateKey = this.lindaWeb.defaultPrivateKey,
+        useLindaHeader = true,
         multisig = false
     ): Promise<SignedStringOrSignedTransaction<T>> {
         // Message signing
@@ -606,7 +606,7 @@ export class Trx {
                 throw new Error('Expected hex message input');
             }
 
-            return Trx.signString(transaction, privateKey as string, useTronHeader) as SignedStringOrSignedTransaction<T>;
+            return Lind.signString(transaction, privateKey as string, useLindaHeader) as SignedStringOrSignedTransaction<T>;
         }
 
         if (!utils.isObject(transaction)) {
@@ -618,7 +618,7 @@ export class Trx {
         }
 
         if (!multisig) {
-            const address = toHex(this.tronWeb.address.fromPrivateKey(privateKey as string) as string).toLowerCase();
+            const address = toHex(this.lindaWeb.address.fromPrivateKey(privateKey as string) as string).toLowerCase();
 
             if (address !== toHex(transaction.raw_data.contract[0].parameter.value.owner_address)) {
                 throw new Error('Private key does not match address in transaction');
@@ -631,12 +631,12 @@ export class Trx {
         return utils.crypto.signTransaction(privateKey as string, transaction) as SignedStringOrSignedTransaction<T>;
     }
 
-    static signString(message: string, privateKey: string, useTronHeader = true) {
+    static signString(message: string, privateKey: string, useLindaHeader = true) {
         message = message.replace(/^0x/, '');
         const value = `0x${privateKey.replace(/^0x/, '')}`;
         const signingKey = new SigningKey(value);
         const messageBytes = [
-            ...toUtf8Bytes(useTronHeader ? TRX_MESSAGE_HEADER : ETH_MESSAGE_HEADER),
+            ...toUtf8Bytes(useLindaHeader ? LIND_MESSAGE_HEADER : ETH_MESSAGE_HEADER),
             ...utils.code.hexStr2byteArray(message),
         ];
         const messageDigest = keccak256(new Uint8Array(messageBytes));
@@ -654,8 +654,8 @@ export class Trx {
      * @param {privateKey for signature} privateKey
      * @param {reserved} options
      */
-    signMessageV2(message: string | Uint8Array | Array<number>, privateKey = this.tronWeb.defaultPrivateKey) {
-        return Trx.signMessageV2(message, privateKey as string);
+    signMessageV2(message: string | Uint8Array | Array<number>, privateKey = this.lindaWeb.defaultPrivateKey) {
+        return Lind.signMessageV2(message, privateKey as string);
     }
 
     static signMessageV2(message: string | Uint8Array | Array<number>, privateKey: string) {
@@ -666,9 +666,9 @@ export class Trx {
         domain: TypedDataDomain,
         types: Record<string, TypedDataField[]>,
         value: Record<string, any>,
-        privateKey = this.tronWeb.defaultPrivateKey
+        privateKey = this.lindaWeb.defaultPrivateKey
     ) {
-        return Trx._signTypedData(domain, types, value, privateKey as string);
+        return Lind._signTypedData(domain, types, value, privateKey as string);
     }
 
     static _signTypedData(
@@ -680,7 +680,7 @@ export class Trx {
         return utils.crypto._signTypedData(domain, types, value, privateKey);
     }
 
-    async multiSign(transaction: Transaction, privateKey = this.tronWeb.defaultPrivateKey, permissionId = 0) {
+    async multiSign(transaction: Transaction, privateKey = this.lindaWeb.defaultPrivateKey, permissionId = 0) {
         if (!utils.isObject(transaction) || !transaction.raw_data || !transaction.raw_data.contract) {
             throw new Error('Invalid transaction provided');
         }
@@ -692,7 +692,7 @@ export class Trx {
             transaction.raw_data.contract[0].Permission_id = permissionId;
 
             // check if private key insides permission list
-            const address = toHex(this.tronWeb.address.fromPrivateKey(privateKey as string) as string).toLowerCase();
+            const address = toHex(this.lindaWeb.address.fromPrivateKey(privateKey as string) as string).toLowerCase();
             const signWeight = await this.getSignWeight(transaction, permissionId);
 
             if (signWeight.result.code === 'PERMISSION_ERROR') {
@@ -735,7 +735,7 @@ export class Trx {
             throw new Error('Invalid transaction provided');
         }
 
-        return this.tronWeb.fullNode.request('wallet/getapprovedlist', transaction, 'post');
+        return this.lindaWeb.fullNode.request('wallet/getapprovedlist', transaction, 'post');
     }
 
     async getSignWeight(transaction: Transaction, permissionId?: number): Promise<TransactionSignWeight> {
@@ -748,7 +748,7 @@ export class Trx {
             transaction.raw_data.contract[0].Permission_id = 0;
         }
 
-        return this.tronWeb.fullNode.request('wallet/getsignweight', transaction, 'post');
+        return this.lindaWeb.fullNode.request('wallet/getsignweight', transaction, 'post');
     }
 
     async sendRawTransaction<T extends SignedTransaction>(signedTransaction: T): Promise<BroadcastReturn<T>> {
@@ -760,7 +760,7 @@ export class Trx {
             throw new Error('Transaction is not signed');
         }
 
-        const result = await this.tronWeb.fullNode.request<Omit<BroadcastReturn<T>, 'transaction'>>(
+        const result = await this.lindaWeb.fullNode.request<Omit<BroadcastReturn<T>, 'transaction'>>(
             'wallet/broadcasttransaction',
             signedTransaction,
             'post'
@@ -780,7 +780,7 @@ export class Trx {
             transaction: signedHexTransaction,
         };
 
-        const result = await this.tronWeb.fullNode.request<BroadcastHexReturn>('wallet/broadcasthex', params, 'post');
+        const result = await this.lindaWeb.fullNode.request<BroadcastHexReturn>('wallet/broadcasthex', params, 'post');
         if (result.result) {
             return {
                 ...result,
@@ -794,7 +794,7 @@ export class Trx {
     async sendTransaction(to: string, amount: number, options: AddressOptions = {}): Promise<BroadcastReturn<SignedTransaction>> {
         if (typeof options === 'string') options = { privateKey: options };
 
-        if (!this.tronWeb.isAddress(to)) {
+        if (!this.lindaWeb.isAddress(to)) {
             throw new Error('Invalid recipient provided');
         }
 
@@ -803,8 +803,8 @@ export class Trx {
         }
 
         options = {
-            privateKey: this.tronWeb.defaultPrivateKey as string,
-            address: this.tronWeb.defaultAddress.hex as string,
+            privateKey: this.lindaWeb.defaultPrivateKey as string,
+            address: this.lindaWeb.defaultAddress.hex as string,
             ...options,
         };
 
@@ -812,8 +812,8 @@ export class Trx {
             throw new Error('Function requires either a private key or address to be set');
         }
 
-        const address = options.privateKey ? this.tronWeb.address.fromPrivateKey(options.privateKey) : options.address;
-        const transaction = await this.tronWeb.transactionBuilder.sendTrx(to, amount, address as Address);
+        const address = options.privateKey ? this.lindaWeb.address.fromPrivateKey(options.privateKey) : options.address;
+        const transaction = await this.lindaWeb.transactionBuilder.sendLind(to, amount, address as Address);
         const signedTransaction = await this.sign(transaction, options.privateKey);
         const result = await this.sendRawTransaction(signedTransaction);
         return result;
@@ -827,7 +827,7 @@ export class Trx {
     ): Promise<BroadcastReturn<SignedTransaction>> {
         if (typeof options === 'string') options = { privateKey: options };
 
-        if (!this.tronWeb.isAddress(to)) {
+        if (!this.lindaWeb.isAddress(to)) {
             throw new Error('Invalid recipient provided');
         }
 
@@ -842,8 +842,8 @@ export class Trx {
         }
 
         options = {
-            privateKey: this.tronWeb.defaultPrivateKey as string,
-            address: this.tronWeb.defaultAddress.hex as string,
+            privateKey: this.lindaWeb.defaultPrivateKey as string,
+            address: this.lindaWeb.defaultAddress.hex as string,
             ...options,
         };
 
@@ -851,19 +851,19 @@ export class Trx {
             throw new Error('Function requires either a private key or address to be set');
         }
 
-        const address = options.privateKey ? this.tronWeb.address.fromPrivateKey(options.privateKey) : options.address;
-        const transaction = await this.tronWeb.transactionBuilder.sendToken(to, amount, tokenID, address as Address);
+        const address = options.privateKey ? this.lindaWeb.address.fromPrivateKey(options.privateKey) : options.address;
+        const transaction = await this.lindaWeb.transactionBuilder.sendToken(to, amount, tokenID, address as Address);
         const signedTransaction = await this.sign(transaction, options.privateKey);
         const result = await this.sendRawTransaction(signedTransaction);
         return result;
     }
 
     /**
-     * Freezes an amount of TRX.
-     * Will give bandwidth OR Energy and TRON Power(voting rights)
+     * Freezes an amount of LIND.
+     * Will give bandwidth OR Energy and LINDA Power(voting rights)
      * to the owner of the frozen tokens.
      *
-     * @param amount - is the number of frozen trx
+     * @param amount - is the number of frozen lind
      * @param duration - is the duration in days to be frozen
      * @param resource - is the type, must be either "ENERGY" or "BANDWIDTH"
      * @param options
@@ -890,8 +890,8 @@ export class Trx {
         }
 
         options = {
-            privateKey: this.tronWeb.defaultPrivateKey as string,
-            address: this.tronWeb.defaultAddress.hex as string,
+            privateKey: this.lindaWeb.defaultPrivateKey as string,
+            address: this.lindaWeb.defaultAddress.hex as string,
             ...options,
         };
 
@@ -899,8 +899,8 @@ export class Trx {
             throw new Error('Function requires either a private key or address to be set');
         }
 
-        const address = options.privateKey ? this.tronWeb.address.fromPrivateKey(options.privateKey) : options.address;
-        const freezeBalance = await this.tronWeb.transactionBuilder.freezeBalance(
+        const address = options.privateKey ? this.lindaWeb.address.fromPrivateKey(options.privateKey) : options.address;
+        const freezeBalance = await this.lindaWeb.transactionBuilder.freezeBalance(
             amount,
             duration,
             resource,
@@ -913,8 +913,8 @@ export class Trx {
     }
 
     /**
-     * Unfreeze TRX that has passed the minimum freeze duration.
-     * Unfreezing will remove bandwidth and TRON Power.
+     * Unfreeze LIND that has passed the minimum freeze duration.
+     * Unfreezing will remove bandwidth and LINDA Power.
      *
      * @param resource - is the type, must be either "ENERGY" or "BANDWIDTH"
      * @param options
@@ -931,8 +931,8 @@ export class Trx {
         }
 
         options = {
-            privateKey: this.tronWeb.defaultPrivateKey as string,
-            address: this.tronWeb.defaultAddress.hex as string,
+            privateKey: this.lindaWeb.defaultPrivateKey as string,
+            address: this.lindaWeb.defaultAddress.hex as string,
             ...options,
         };
 
@@ -940,8 +940,8 @@ export class Trx {
             throw new Error('Function requires either a private key or address to be set');
         }
 
-        const address = options.privateKey ? this.tronWeb.address.fromPrivateKey(options.privateKey) : options.address;
-        const unfreezeBalance = await this.tronWeb.transactionBuilder.unfreezeBalance(
+        const address = options.privateKey ? this.lindaWeb.address.fromPrivateKey(options.privateKey) : options.address;
+        const unfreezeBalance = await this.lindaWeb.transactionBuilder.unfreezeBalance(
             resource,
             address as Address,
             receiverAddress
@@ -968,15 +968,15 @@ export class Trx {
         }
 
         options = {
-            privateKey: this.tronWeb.defaultPrivateKey as string,
-            address: this.tronWeb.defaultAddress.hex as string,
+            privateKey: this.lindaWeb.defaultPrivateKey as string,
+            address: this.lindaWeb.defaultAddress.hex as string,
             ...options,
         };
 
         if (!options.privateKey && !options.address) throw Error('Function requires either a private key or address to be set');
 
-        const address = options.privateKey ? this.tronWeb.address.fromPrivateKey(options.privateKey) : options.address;
-        const updateAccount = await this.tronWeb.transactionBuilder.updateAccount(accountName, address as Address);
+        const address = options.privateKey ? this.lindaWeb.address.fromPrivateKey(options.privateKey) : options.address;
+        const updateAccount = await this.lindaWeb.transactionBuilder.updateAccount(accountName, address as Address);
         const signedTransaction = await this.sign(updateAccount, options.privateKey);
         const result = await this.sendRawTransaction(signedTransaction);
         return result;
@@ -990,7 +990,7 @@ export class Trx {
             throw new Error('Invalid proposalID provided');
         }
 
-        return this.tronWeb.fullNode.request(
+        return this.lindaWeb.fullNode.request(
             'wallet/getproposalbyid',
             {
                 id: parseInt(proposalID),
@@ -1003,7 +1003,7 @@ export class Trx {
      * Lists all network modification proposals.
      */
     async listProposals(): Promise<Proposal[]> {
-        const { proposals = [] } = await this.tronWeb.fullNode.request<{ proposals: Proposal[] }>(
+        const { proposals = [] } = await this.lindaWeb.fullNode.request<{ proposals: Proposal[] }>(
             'wallet/listproposals',
             {},
             'post'
@@ -1015,7 +1015,7 @@ export class Trx {
      * Lists all parameters available for network modification proposals.
      */
     async getChainParameters(): Promise<ChainParameter[]> {
-        const { chainParameter = [] } = await this.tronWeb.fullNode.request<{ chainParameter: ChainParameter[] }>(
+        const { chainParameter = [] } = await this.lindaWeb.fullNode.request<{ chainParameter: ChainParameter[] }>(
             'wallet/getchainparameters',
             {},
             'post'
@@ -1026,12 +1026,12 @@ export class Trx {
     /**
      * Get the account resources
      */
-    async getAccountResources(address = this.tronWeb.defaultAddress.hex): Promise<AccountResourceMessage> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+    async getAccountResources(address = this.lindaWeb.defaultAddress.hex): Promise<AccountResourceMessage> {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
-        return this.tronWeb.fullNode.request(
+        return this.lindaWeb.fullNode.request(
             'wallet/getaccountresource',
             {
                 address: toHex(address as string),
@@ -1044,8 +1044,8 @@ export class Trx {
      * Query the amount of resources of a specific resourceType delegated by fromAddress to toAddress
      */
     async getDelegatedResourceV2(
-        fromAddress = this.tronWeb.defaultAddress.hex,
-        toAddress = this.tronWeb.defaultAddress.hex,
+        fromAddress = this.lindaWeb.defaultAddress.hex,
+        toAddress = this.lindaWeb.defaultAddress.hex,
         options = { confirmed: true }
     ): Promise<{
         delegatedResource: {
@@ -1057,15 +1057,15 @@ export class Trx {
             expire_time_for_energy: number;
         };
     }> {
-        if (!this.tronWeb.isAddress(fromAddress as Address)) {
+        if (!this.lindaWeb.isAddress(fromAddress as Address)) {
             throw new Error('Invalid address provided');
         }
 
-        if (!this.tronWeb.isAddress(toAddress as Address)) {
+        if (!this.lindaWeb.isAddress(toAddress as Address)) {
             throw new Error('Invalid address provided');
         }
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
             `wallet${options.confirmed ? 'solidity' : ''}/getdelegatedresourcev2`,
             {
                 fromAddress: toHex(fromAddress as string),
@@ -1079,18 +1079,18 @@ export class Trx {
      * Query the resource delegation index by an account
      */
     async getDelegatedResourceAccountIndexV2(
-        address = this.tronWeb.defaultAddress.hex,
+        address = this.lindaWeb.defaultAddress.hex,
         options = { confirmed: true }
     ): Promise<{
         account: Address;
         fromAccounts: Address[];
         toAccounts: Address[];
     }> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
             `wallet${options.confirmed ? 'solidity' : ''}/getdelegatedresourceaccountindexv2`,
             {
                 value: toHex(address as Address),
@@ -1103,13 +1103,13 @@ export class Trx {
      * Query the amount of delegatable resources of the specified resource Type for target address, unit is sun.
      */
     async getCanDelegatedMaxSize(
-        address = this.tronWeb.defaultAddress.hex,
+        address = this.lindaWeb.defaultAddress.hex,
         resource: Resource = 'BANDWIDTH',
         options = { confirmed: true }
     ): Promise<{
         max_size: number;
     }> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
@@ -1122,7 +1122,7 @@ export class Trx {
             },
         ]);
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
             `wallet${options.confirmed ? 'solidity' : ''}/getcandelegatedmaxsize`,
             {
                 owner_address: toHex(address as Address),
@@ -1136,16 +1136,16 @@ export class Trx {
      * Remaining times of available unstaking API
      */
     async getAvailableUnfreezeCount(
-        address = this.tronWeb.defaultAddress.hex,
+        address = this.lindaWeb.defaultAddress.hex,
         options = { confirmed: true }
     ): Promise<{
         count: number;
     }> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
             `wallet${options.confirmed ? 'solidity' : ''}/getavailableunfreezecount`,
             {
                 owner_address: toHex(address as Address),
@@ -1158,13 +1158,13 @@ export class Trx {
      * Query the withdrawable balance at the specified timestamp
      */
     async getCanWithdrawUnfreezeAmount(
-        address = this.tronWeb.defaultAddress.hex,
+        address = this.lindaWeb.defaultAddress.hex,
         timestamp = Date.now(),
         options = { confirmed: true }
     ): Promise<{
         amount: number;
     }> {
-        if (!this.tronWeb.isAddress(address as Address)) {
+        if (!this.lindaWeb.isAddress(address as Address)) {
             throw new Error('Invalid address provided');
         }
 
@@ -1172,7 +1172,7 @@ export class Trx {
             throw new Error('Invalid timestamp provided');
         }
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode'].request(
             `wallet${options.confirmed ? 'solidity' : ''}/getcanwithdrawunfreezeamount`,
             {
                 owner_address: toHex(address as Address),
@@ -1190,7 +1190,7 @@ export class Trx {
             throw new Error('Invalid exchangeID provided');
         }
 
-        return this.tronWeb.fullNode.request(
+        return this.lindaWeb.fullNode.request(
             'wallet/getexchangebyid',
             {
                 id: exchangeID,
@@ -1203,7 +1203,7 @@ export class Trx {
      * Lists the exchanges
      */
     async listExchanges() {
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<{ exchanges: Exchange[] }>('wallet/listexchanges', {}, 'post')
             .then(({ exchanges = [] }) => exchanges);
     }
@@ -1212,7 +1212,7 @@ export class Trx {
      * Lists all network modification proposals.
      */
     async listExchangesPaginated(limit = 10, offset = 0) {
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<{ exchanges: Exchange[] }>(
                 'wallet/getpaginatedexchangelist',
                 {
@@ -1314,7 +1314,7 @@ export class Trx {
         };
         cheatWitnessInfoMap: Map<string, string>;
     }> {
-        return this.tronWeb.fullNode.request('wallet/getnodeinfo', {}, 'post');
+        return this.lindaWeb.fullNode.request('wallet/getnodeinfo', {}, 'post');
     }
 
     async getTokenListByName(tokenID: string | number): Promise<Token | Token[]> {
@@ -1324,11 +1324,11 @@ export class Trx {
             throw new Error('Invalid token ID provided');
         }
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<({ assetIssue: Token[] } & { name: undefined }) | (Token & { assetIssue: undefined })>(
                 'wallet/getassetissuelistbyname',
                 {
-                    value: this.tronWeb.fromUtf8(tokenID),
+                    value: this.lindaWeb.fromUtf8(tokenID),
                 },
                 'post'
             )
@@ -1350,7 +1350,7 @@ export class Trx {
             throw new Error('Invalid token ID provided');
         }
 
-        return this.tronWeb.fullNode
+        return this.lindaWeb.fullNode
             .request<Token>(
                 'wallet/getassetissuebyid',
                 {
@@ -1387,7 +1387,7 @@ export class Trx {
         return this._getBrokerage(address, options);
     }
 
-    async _getReward(address = this.tronWeb.defaultAddress.hex, options: { confirmed?: boolean }): Promise<number> {
+    async _getReward(address = this.lindaWeb.defaultAddress.hex, options: { confirmed?: boolean }): Promise<number> {
         this.validator.notValid([
             {
                 name: 'origin',
@@ -1400,7 +1400,7 @@ export class Trx {
             address: toHex(address as Address),
         };
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode']
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode']
             .request<{ reward?: number }>(`wallet${options.confirmed ? 'solidity' : ''}/getReward`, data, 'post')
             .then((result = { reward: undefined }) => {
                 if (typeof result.reward === 'undefined') {
@@ -1411,7 +1411,7 @@ export class Trx {
             });
     }
 
-    private async _getBrokerage(address = this.tronWeb.defaultAddress.hex, options: { confirmed?: boolean }): Promise<number> {
+    private async _getBrokerage(address = this.lindaWeb.defaultAddress.hex, options: { confirmed?: boolean }): Promise<number> {
         this.validator.notValid([
             {
                 name: 'origin',
@@ -1424,7 +1424,7 @@ export class Trx {
             address: toHex(address as Address),
         };
 
-        return this.tronWeb[options.confirmed ? 'solidityNode' : 'fullNode']
+        return this.lindaWeb[options.confirmed ? 'solidityNode' : 'fullNode']
             .request<{ brokerage?: number }>(`wallet${options.confirmed ? 'solidity' : ''}/getBrokerage`, data, 'post')
             .then((result = {}) => {
                 if (typeof result.brokerage === 'undefined') {
@@ -1436,7 +1436,7 @@ export class Trx {
     }
 
     async getBandwidthPrices(): Promise<string> {
-        return this.tronWeb.fullNode.request<{ prices?: string }>('wallet/getbandwidthprices', {}, 'post')
+        return this.lindaWeb.fullNode.request<{ prices?: string }>('wallet/getbandwidthprices', {}, 'post')
             .then((result = {}) => {
                 if (typeof result.prices === 'undefined') {
                     throw new Error('Not found.');
@@ -1447,7 +1447,7 @@ export class Trx {
     }
 
     async getEnergyPrices(): Promise<string> {
-        return this.tronWeb.fullNode.request<{ prices?: string }>('wallet/getenergyprices', {}, 'post')
+        return this.lindaWeb.fullNode.request<{ prices?: string }>('wallet/getenergyprices', {}, 'post')
             .then((result = {}) => {
                 if (typeof result.prices === 'undefined') {
                     throw new Error('Not found.');

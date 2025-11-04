@@ -2,10 +2,10 @@
 // @ts-nocheck
 const _ = require('lodash');
 const wait = require('./wait');
-const tronWebBuilder = require('./tronWebBuilder');
+const lindaWebBuilder = require('./lindaWebBuilder');
 
 module.exports = async function pollAccountFor(address, property, value = false, interval = 3, timeout = 10000) {
-    const tronWeb = tronWebBuilder.createInstance();
+    const lindaWeb = lindaWebBuilder.createInstance();
     const now = Date.now();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -13,7 +13,7 @@ module.exports = async function pollAccountFor(address, property, value = false,
             throw new Error('Timeout...');
         }
         wait(interval);
-        const result = await tronWeb.trx.getAccount(address);
+        const result = await lindaWeb.lind.getAccount(address);
         if (typeof property === 'string') {
             const data = _.get(result, property);
             if (data) {

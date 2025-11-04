@@ -1,17 +1,17 @@
-import { TronWeb } from '../setup/TronWeb.js';
+import { LindaWeb } from '../setup/LindaWeb.js';
 
 let someParameter: any;
 
 export default class GetNowBlock {
-    tronWeb: TronWeb;
-    constructor(tronWeb: TronWeb) {
-        if (!tronWeb) throw new Error('Expected instance of TronWeb');
+    lindaWeb: LindaWeb;
+    constructor(lindaWeb: LindaWeb) {
+        if (!lindaWeb) throw new Error('Expected instance of LindaWeb');
 
-        this.tronWeb = tronWeb;
+        this.lindaWeb = lindaWeb;
     }
 
     async someMethod() {
-        const block: any = await this.tronWeb.fullNode.request('wallet/getnowblock');
+        const block: any = await this.lindaWeb.fullNode.request('wallet/getnowblock');
         block.fromPlugin = true;
         return block;
     }
@@ -27,7 +27,7 @@ export default class GetNowBlock {
         return {
             requires: '^6.0.0',
             components: {
-                trx: {
+                lind: {
                     // will be overridden
                     getCurrentBlock: this.someMethod,
 

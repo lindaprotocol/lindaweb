@@ -1,7 +1,7 @@
 /* eslint-disable no-control-regex */
 import utils from '../../utils/index.js';
 import { encodeParamsV2ByABI, decodeParamsV2ByABI } from '../../utils/abi.js';
-import { TronWeb } from '../../tronweb.js';
+import { LindaWeb } from '../../lindaweb.js';
 import { Contract } from './index.js';
 import { sha3 } from '../../utils/crypto.js';
 
@@ -47,7 +47,7 @@ import type {
     GetOutputsType,
     AbiParamsCommon,
 } from '../../types/ABI.js';
-import { TransactionInfo } from '../../types/Trx.js';
+import { TransactionInfo } from '../../types/Lind.js';
 
 export type AbiFragmentNoErrConstructor = FunctionFragment | EventFragment | FallbackFragment | ReceiveFragment;
 
@@ -89,7 +89,7 @@ const decodeOutput = <T extends Readonly<AbiFragmentNoErrConstructor>>(abi: T, o
 };
 
 export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
-    tronWeb: TronWeb;
+    lindaWeb: LindaWeb;
     contract: Contract;
     abi: AbiFrag;
     name: string;
@@ -104,7 +104,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
     };
 
     constructor(contract: Contract, abi: AbiFrag) {
-        this.tronWeb = contract.tronWeb;
+        this.lindaWeb = contract.lindaWeb;
         this.contract = contract;
 
         this.abi = abi;
@@ -121,7 +121,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
         this.signature = sha3(this.functionSelector, false).slice(0, 8);
 
         this.defaultOptions = {
-            feeLimit: this.tronWeb.feeLimit,
+            feeLimit: this.lindaWeb.feeLimit,
             callValue: 0,
             shouldPollResponse: false, // Only used for sign()
         };
@@ -147,7 +147,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
 
                 return await this._call([], [], options) as any;
             },
-            send: async <__SendOptions extends Readonly<SendOptions>>(options: __SendOptions = {} as __SendOptions, privateKey = this.tronWeb.defaultPrivateKey): Promise<
+            send: async <__SendOptions extends Readonly<SendOptions>>(options: __SendOptions = {} as __SendOptions, privateKey = this.lindaWeb.defaultPrivateKey): Promise<
                 __SendOptions['shouldPollResponse'] extends true 
                     ? __SendOptions['rawResponse'] extends true
                         ? TransactionInfo
@@ -188,7 +188,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
 
         options = {
             ...this.defaultOptions,
-            from: this.tronWeb.defaultAddress.hex,
+            from: this.lindaWeb.defaultAddress.hex,
             ...options,
             _isConstant: true,
         };
@@ -198,12 +198,12 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
             value,
         }));
 
-        const transaction = await this.tronWeb.transactionBuilder.triggerSmartContract(
+        const transaction = await this.lindaWeb.transactionBuilder.triggerSmartContract(
             this.contract.address,
             this.functionSelector!,
             options,
             parameters,
-            options.from ? this.tronWeb.address.toHex(options.from) : undefined
+            options.from ? this.lindaWeb.address.toHex(options.from) : undefined
         );
 
         if (!utils.hasProperty(transaction, 'constant_result')) {
@@ -218,7 +218,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
                 let msg2 = '';
                 const chunk = transaction.constant_result![0].substring(8);
                 for (let i = 0; i < len - 8; i += 64) {
-                    msg2 += this.tronWeb.toUtf8(chunk.substring(i, i + 64));
+                    msg2 += this.lindaWeb.toUtf8(chunk.substring(i, i + 64));
                 }
                 msg += msg2
                     .replace(/(\u0000|\u000b|\f)+/g, ' ')
@@ -239,7 +239,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
         return output;
     }
 
-    async _send(types: [], args: [], options: _SendOptions = {}, privateKey = this.tronWeb.defaultPrivateKey) {
+    async _send(types: [], args: [], options: _SendOptions = {}, privateKey = this.lindaWeb.defaultPrivateKey) {
         if (types.length !== args.length) {
             throw new Error('Invalid argument count provided');
         }
@@ -265,7 +265,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
 
         options = {
             ...this.defaultOptions,
-            from: this.tronWeb.defaultAddress.hex,
+            from: this.lindaWeb.defaultAddress.hex,
             ...options,
         };
 
@@ -274,13 +274,13 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
             value,
         }));
 
-        const address = privateKey ? this.tronWeb.address.fromPrivateKey(privateKey) : this.tronWeb.defaultAddress.base58;
-        const transaction = await this.tronWeb.transactionBuilder.triggerSmartContract(
+        const address = privateKey ? this.lindaWeb.address.fromPrivateKey(privateKey) : this.lindaWeb.defaultAddress.base58;
+        const transaction = await this.lindaWeb.transactionBuilder.triggerSmartContract(
             this.contract.address,
             this.functionSelector!,
             options,
             parameters,
-            this.tronWeb.address.toHex(address as string)
+            this.lindaWeb.address.toHex(address as string)
         );
 
         if (!transaction.result || !transaction.result.result) {
@@ -288,7 +288,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
         }
 
         // If privateKey is false, this won't be signed here. We assume sign functionality will be replaced.
-        const signedTransaction = await this.tronWeb.trx.sign(transaction.transaction, privateKey);
+        const signedTransaction = await this.lindaWeb.lind.sign(transaction.transaction, privateKey);
 
         if (!signedTransaction.signature) {
             if (!privateKey) {
@@ -298,14 +298,14 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
             throw new Error('Invalid private key provided');
         }
 
-        const broadcast = await this.tronWeb.trx.sendRawTransaction(signedTransaction);
+        const broadcast = await this.lindaWeb.lind.sendRawTransaction(signedTransaction);
 
         if (broadcast.code) {
             const err = {
                 error: broadcast.code,
                 message: broadcast.code as unknown as string,
             };
-            if (broadcast.message) err.message = this.tronWeb.toUtf8(broadcast.message);
+            if (broadcast.message) err.message = this.lindaWeb.toUtf8(broadcast.message);
             const error = new Error(err.message);
             (error as any).error = broadcast.code;
             throw error;
@@ -323,7 +323,7 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
                 throw error;
             }
 
-            const output = await this.tronWeb.trx.getTransactionInfo(signedTransaction.txID);
+            const output = await this.lindaWeb.lind.getTransactionInfo(signedTransaction.txID);
 
             if (!Object.keys(output).length) {
                 await new Promise((r) => setTimeout(r, 3000));
@@ -331,8 +331,8 @@ export class Method<AbiFrag extends Readonly<AbiFragmentNoErrConstructor>> {
             }
 
             if (output.result && output.result === 'FAILED') {
-                const error: any = new Error(this.tronWeb.toUtf8(output.resMessage));
-                error.error = this.tronWeb.toUtf8(output.resMessage);
+                const error: any = new Error(this.lindaWeb.toUtf8(output.resMessage));
+                error.error = this.lindaWeb.toUtf8(output.resMessage);
                 error.transaction = signedTransaction;
                 error.output = output;
                 throw error;

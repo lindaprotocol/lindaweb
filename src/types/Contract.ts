@@ -205,7 +205,7 @@ export interface AssetIssueContract {
     description: string;
     url: string;
     total_supply: number;
-    trx_num: number;
+    lind_num: number;
     num: number;
     start_time: number;
     end_time: number;

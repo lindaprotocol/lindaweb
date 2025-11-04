@@ -1,4 +1,4 @@
-import { TronWeb } from '../tronweb.js';
+import { LindaWeb } from '../lindaweb.js';
 import utils from '../utils/index.js';
 import semver from 'semver';
 
@@ -7,7 +7,7 @@ interface PluginConstructorOptions {
 }
 
 interface PluginClassInterface {
-    new (tronWeb: TronWeb): {
+    new (lindaWeb: LindaWeb): {
         pluginInterface?: (options: PluginOptions) => PluginInterfaceReturn;
     };
 }
@@ -21,13 +21,13 @@ interface PluginInterfaceReturn {
 type PluginOptions = any;
 
 export class Plugin {
-    tronWeb: TronWeb;
+    lindaWeb: LindaWeb;
     pluginNoOverride: string[];
     disablePlugins: boolean;
 
-    constructor(tronWeb: TronWeb, options: PluginConstructorOptions = {}) {
-        if (!tronWeb || !(tronWeb instanceof TronWeb)) throw new Error('Expected instance of TronWeb');
-        this.tronWeb = tronWeb;
+    constructor(lindaWeb: LindaWeb, options: PluginConstructorOptions = {}) {
+        if (!lindaWeb || !(lindaWeb instanceof LindaWeb)) throw new Error('Expected instance of LindaWeb');
+        this.lindaWeb = lindaWeb;
         this.pluginNoOverride = ['register'];
         this.disablePlugins = !!options.disablePlugins;
     }
@@ -49,53 +49,53 @@ export class Plugin {
             error: undefined,
         };
         if (this.disablePlugins) {
-            result.error = 'This instance of TronWeb has plugins disabled.';
+            result.error = 'This instance of LindaWeb has plugins disabled.';
             return result;
         }
-        const plugin = new Plugin(this.tronWeb);
+        const plugin = new Plugin(this.lindaWeb);
         if (utils.isFunction(plugin.pluginInterface)) {
             pluginInterface = plugin.pluginInterface(options);
         }
-        if (semver.satisfies(TronWeb.version, pluginInterface.requires)) {
+        if (semver.satisfies(LindaWeb.version, pluginInterface.requires)) {
             if (pluginInterface.fullClass) {
-                // plug the entire class at the same level of tronWeb.trx
+                // plug the entire class at the same level of lindaWeb.lind
                 const className = plugin.constructor.name;
                 const classInstanceName = className.substring(0, 1).toLowerCase() + className.substring(1);
                 if (className !== classInstanceName) {
-                    Object.assign(TronWeb, {
+                    Object.assign(LindaWeb, {
                         [className]: Plugin,
                     });
-                    Object.assign(this.tronWeb, {
+                    Object.assign(this.lindaWeb, {
                         [classInstanceName]: plugin,
                     });
                     result.libs.push(className);
                 }
             } else {
-                // plug methods into a class, like trx
+                // plug methods into a class, like lind
                 for (const component in pluginInterface.components) {
                     // eslint-disable-next-line no-prototype-builtins
-                    if (!this.tronWeb.hasOwnProperty(component)) {
+                    if (!this.lindaWeb.hasOwnProperty(component)) {
                         continue;
                     }
                     const methods = pluginInterface.components[component];
-                    const pluginNoOverride = (this.tronWeb as any)[component].pluginNoOverride || [];
+                    const pluginNoOverride = (this.lindaWeb as any)[component].pluginNoOverride || [];
                     for (const method in methods) {
                         if (
                             method === 'constructor' ||
-                            ((this.tronWeb as any)[component][method] &&
+                            ((this.lindaWeb as any)[component][method] &&
                                 (pluginNoOverride.includes(method) || // blacklisted methods
                                     /^_/.test(method))) // private methods
                         ) {
                             result.skipped.push(method);
                             continue;
                         }
-                        (this.tronWeb as any)[component][method] = methods[method].bind((this.tronWeb as any)[component]);
+                        (this.lindaWeb as any)[component][method] = methods[method].bind((this.lindaWeb as any)[component]);
                         result.plugged.push(method);
                     }
                 }
             }
         } else {
-            throw new Error('The plugin is not compatible with this version of TronWeb');
+            throw new Error('The plugin is not compatible with this version of LindaWeb');
         }
         return result;
     }

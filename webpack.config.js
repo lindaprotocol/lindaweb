@@ -9,7 +9,7 @@ module.exports = [
         ...baseConfig,
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: 'TronWeb.node.js',
+            filename: 'LindaWeb.node.js',
             libraryTarget: 'commonjs2',
             libraryExport: 'default',
         },
@@ -84,8 +84,8 @@ module.exports = [
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: 'TronWeb.js',
-            library: 'TronWeb',
+            filename: 'LindaWeb.js',
+            library: 'LindaWeb',
             libraryTarget: 'umd',
             libraryExport: 'default',
             umdNamedDefine: true,

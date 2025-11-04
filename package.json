@@ -1,7 +1,7 @@
 {
-    "name": "tronweb",
+    "name": "lindaweb",
     "version": "6.0.4",
-    "description": "JavaScript SDK that encapsulates the TRON HTTP API",
+    "description": "JavaScript SDK that encapsulates the LINDA HTTP API",
     "main": "./lib/commonjs/index.js",
     "module": "./lib/esm/index.js",
     "types": "./lib/esm/index.d.ts",
@@ -21,8 +21,8 @@
         }
     },
     "keywords": [
-        "TRON",
-        "tronweb"
+        "LINDA",
+        "lindaweb"
     ],
     "scripts": {
         "build:esm": "tsc --project tsconfig.esm.json && echo '{\"type\": \"module\"}' > ./lib/esm/package.json && npm run copy-protocol:esm",
@@ -128,10 +128,10 @@
         "webpack-node-externals": "3.0.0"
     },
     "author": {
-        "name": "Tron Protocol",
-        "url": "https://github.com/tronprotocol"
+        "name": "Linda Protocol",
+        "url": "https://github.com/lindaprotocol"
     },
-    "homepage": "https://tronweb.network",
+    "homepage": "https://lindaweb.network",
     "license": "MIT",
-    "repository": "https://github.com/tronprotocol/tronweb.git"
+    "repository": "https://github.com/lindaprotocol/lindaweb.git"
 }

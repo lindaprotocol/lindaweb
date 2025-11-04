@@ -1,12 +1,12 @@
-import { TronWeb } from '../../tronweb.js';
+import { LindaWeb } from '../../lindaweb.js';
 import utils from '../../utils/index.js';
 import { Method, AbiFragmentNoErrConstructor } from './method.js';
 import type { ContractAbiInterface, GetMethodsTypeFromAbi, GetOnMethodTypeFromAbi, AnyOnMethodType } from '../../types/ABI.js';
-import type { Address } from '../../types/Trx.js';
+import type { Address } from '../../types/Lind.js';
 import type { CreateSmartContractOptions } from '../../types/TransactionBuilder.js';
 
 export class Contract<Abi extends ContractAbiInterface = ContractAbiInterface> {
-    tronWeb: TronWeb;
+    lindaWeb: LindaWeb;
     abi: Abi;
     address: false | string;
     eventListener: any;
@@ -18,10 +18,10 @@ export class Contract<Abi extends ContractAbiInterface = ContractAbiInterface> {
     props: any[];
     [key: string | number | symbol]: any;
 
-    constructor(tronWeb: TronWeb, abi: Abi = [] as any, address: Address) {
-        if (!tronWeb || !(tronWeb instanceof TronWeb)) throw new Error('Expected instance of TronWeb');
+    constructor(lindaWeb: LindaWeb, abi: Abi = [] as any, address: Address) {
+        if (!lindaWeb || !(lindaWeb instanceof LindaWeb)) throw new Error('Expected instance of LindaWeb');
 
-        this.tronWeb = tronWeb;
+        this.lindaWeb = lindaWeb;
 
         this.address = address;
         this.abi = abi;
@@ -106,27 +106,27 @@ export class Contract<Abi extends ContractAbiInterface = ContractAbiInterface> {
         };
     }
 
-    async new(options: CreateSmartContractOptions, privateKey = this.tronWeb.defaultPrivateKey) {
-        const address = this.tronWeb.address.fromPrivateKey(privateKey as string);
-        const transaction = await this.tronWeb.transactionBuilder.createSmartContract(options, address as Address);
-        const signedTransaction = await this.tronWeb.trx.sign(transaction, privateKey);
-        const contract = await this.tronWeb.trx.sendRawTransaction(signedTransaction);
+    async new(options: CreateSmartContractOptions, privateKey = this.lindaWeb.defaultPrivateKey) {
+        const address = this.lindaWeb.address.fromPrivateKey(privateKey as string);
+        const transaction = await this.lindaWeb.transactionBuilder.createSmartContract(options, address as Address);
+        const signedTransaction = await this.lindaWeb.lind.sign(transaction, privateKey);
+        const contract = await this.lindaWeb.lind.sendRawTransaction(signedTransaction);
 
         if (contract.code) {
             throw {
                 error: contract.code,
-                message: this.tronWeb.toUtf8(contract.message),
+                message: this.lindaWeb.toUtf8(contract.message),
             };
         }
 
         await utils.sleep(3000);
         const abi = signedTransaction.raw_data.contract[0].parameter.value.new_contract.abi.entrys || [];
-        return this.tronWeb.contract(abi, signedTransaction.contract_address);
+        return this.lindaWeb.contract(abi, signedTransaction.contract_address);
     }
 
     async at(contractAddress: Address) {
         try {
-            const contract = await this.tronWeb.trx.getContract(contractAddress);
+            const contract = await this.lindaWeb.lind.getContract(contractAddress);
 
             if (!contract.contract_address) {
                 throw new Error('Unknown error: ' + JSON.stringify(contract, null, 2));

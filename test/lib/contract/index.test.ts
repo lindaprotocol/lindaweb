@@ -1,9 +1,9 @@
-import { Address } from '../../../src/types/Trx';
+import { Address } from '../../../src/types/Lind';
 import { assert } from 'chai';
 import wait from '../../helpers/wait.js';
 import broadcaster from '../../helpers/broadcaster.js';
-import tronWebBuilder from '../../helpers/tronWebBuilder.js';
-import { TronWeb } from '../../setup/TronWeb.js';
+import lindaWebBuilder from '../../helpers/lindaWebBuilder.js';
+import { LindaWeb } from '../../setup/LindaWeb.js';
 import contracts from '../../fixtures/contracts';
 import { Contract } from '../../../src/lib/contract';
 
@@ -15,12 +15,12 @@ describe('#contract.index', function () {
         b58: Address[];
         pks: string[];
     };
-    let tronWeb: TronWeb;
+    let lindaWeb: LindaWeb;
 
     before(async function () {
-        tronWeb = tronWebBuilder.createInstance();
-        // ALERT this works only with Tron Quickstart:
-        accounts = await tronWebBuilder.getTestAccounts(-1);
+        lindaWeb = lindaWebBuilder.createInstance();
+        // ALERT this works only with Linda Quickstart:
+        accounts = await lindaWebBuilder.getTestAccounts(-1);
     });
 
     describe('#customError', function () {
@@ -28,7 +28,7 @@ describe('#contract.index', function () {
 
         before(async function () {
             const tx = await broadcaster(
-                tronWeb.transactionBuilder.createSmartContract(
+                lindaWeb.transactionBuilder.createSmartContract(
                     {
                         abi: testCustomError.abi,
                         bytecode: testCustomError.bytecode,
@@ -37,16 +37,16 @@ describe('#contract.index', function () {
                 ),
                 accounts.pks[0]
             );
-            customError = tronWeb.contract(testCustomError.abi, tx.transaction.contract_address);
+            customError = lindaWeb.contract(testCustomError.abi, tx.transaction.contract_address);
         });
 
         it('should revert with custom error', async () => {
             const txid = await customError.test(111).send();
             await wait(10);
-            const data = await tronWeb.trx.getTransactionInfo(txid);
+            const data = await lindaWeb.lind.getTransactionInfo(txid);
             const errorData = data.contractResult;
             const expectedErrorData =
-                TronWeb.sha3('CustomError(uint256,uint256)', false).slice(0, 8) +
+                LindaWeb.sha3('CustomError(uint256,uint256)', false).slice(0, 8) +
                 '000000000000000000000000000000000000000000000000000000000000006f' + // 111
                 '0000000000000000000000000000000000000000000000000000000000000001'; // 1
             assert.equal(errorData.join(''), expectedErrorData);

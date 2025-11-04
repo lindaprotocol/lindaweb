@@ -10,8 +10,8 @@ export { providers };
 import { TransactionBuilder } from './lib/TransactionBuilder/TransactionBuilder.js';
 export { TransactionBuilder };
 
-import { Trx } from './lib/trx.js';
-export { Trx };
+import { Lind } from './lib/lind.js';
+export { Lind };
 
 import { Contract, Method } from './lib/contract/index.js';
 export { Contract, Method };
@@ -22,8 +22,8 @@ export { Event };
 import { Plugin } from './lib/plugin.js';
 export { Plugin };
 
-import { TronWeb } from './tronweb.js';
-export { TronWeb };
+import { LindaWeb } from './lindaweb.js';
+export { LindaWeb };
 
 import * as Types from './types/index.js';
 export { Types };
@@ -33,11 +33,11 @@ export default {
     BigNumber,
     providers,
     TransactionBuilder,
-    Trx,
+    Lind,
     Contract,
     Method,
     Event,
     Plugin,
-    TronWeb,
+    LindaWeb,
     Types,
 };

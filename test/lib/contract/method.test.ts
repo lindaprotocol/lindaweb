@@ -1,9 +1,9 @@
-import { Address } from '../../../src/types/Trx.js';
+import { Address } from '../../../src/types/Lind.js';
 import { assert } from 'chai';
 import assertThrow from '../../helpers/assertThrow.js';
 import broadcaster from '../../helpers/broadcaster.js';
-import tronWebBuilder from '../../helpers/tronWebBuilder.js';
-import { Contract, TronWeb } from '../../setup/TronWeb.js';
+import lindaWebBuilder from '../../helpers/lindaWebBuilder.js';
+import { Contract, LindaWeb } from '../../setup/LindaWeb.js';
 import contracts from '../../fixtures/contracts.js';
 const testRevertContract = contracts.testRevert;
 const testSetValContract = contracts.testSetVal;
@@ -14,12 +14,12 @@ describe('#contract.method', function () {
         b58: Address[];
         pks: string[];
     };
-    let tronWeb: TronWeb;
+    let lindaWeb: LindaWeb;
 
     before(async function () {
-        tronWeb = tronWebBuilder.createInstance();
-        // ALERT this works only with Tron Quickstart:
-        accounts = await tronWebBuilder.getTestAccounts(-1);
+        lindaWeb = lindaWebBuilder.createInstance();
+        // ALERT this works only with Linda Quickstart:
+        accounts = await lindaWebBuilder.getTestAccounts(-1);
     });
 
     describe('#send()', function () {
@@ -28,7 +28,7 @@ describe('#contract.method', function () {
 
         before(async function () {
             const tx = await broadcaster(
-                tronWeb.transactionBuilder.createSmartContract(
+                lindaWeb.transactionBuilder.createSmartContract(
                     {
                         abi: testRevertContract.abi,
                         bytecode: testRevertContract.bytecode,
@@ -37,10 +37,10 @@ describe('#contract.method', function () {
                 ),
                 accounts.pks[0]
             );
-            testRevert = await tronWeb.contract().at(tx.transaction.contract_address);
+            testRevert = await lindaWeb.contract().at(tx.transaction.contract_address);
 
             const tx2 = await broadcaster(
-                tronWeb.transactionBuilder.createSmartContract(
+                lindaWeb.transactionBuilder.createSmartContract(
                     {
                         abi: testSetValContract.abi,
                         bytecode: testSetValContract.bytecode,
@@ -49,7 +49,7 @@ describe('#contract.method', function () {
                 ),
                 accounts.pks[0]
             );
-            testSetVal = await tronWeb.contract().at(tx2.transaction.contract_address);
+            testSetVal = await lindaWeb.contract().at(tx2.transaction.contract_address);
         });
 
         it('should set accounts[2] as the owner and check it with getOwner(1)', async function () {
@@ -82,7 +82,7 @@ describe('#contract.method', function () {
 
         before(async function () {
             const tx = await broadcaster(
-                tronWeb.transactionBuilder.createSmartContract(
+                lindaWeb.transactionBuilder.createSmartContract(
                     {
                         abi: testRevertContract.abi,
                         bytecode: testRevertContract.bytecode,
@@ -91,7 +91,7 @@ describe('#contract.method', function () {
                 ),
                 accounts.pks[0]
             );
-            testRevert = await tronWeb.contract().at(tx.transaction.contract_address);
+            testRevert = await lindaWeb.contract().at(tx.transaction.contract_address);
             await testRevert.setOwner(accounts.b58[2]).send();
         });
 

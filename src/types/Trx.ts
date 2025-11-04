@@ -17,7 +17,7 @@ export interface Token {
     abbr: string;
     total_supply: number;
     frozen_supply: FrozenSupply[];
-    trx_num: number;
+    lind_num: number;
     precision: number;
     num: number;
     start_time: number;
@@ -60,7 +60,7 @@ export interface AccountResource {
 export enum ResourceCode {
     BANDWIDTH = 0x00,
     ENERGY = 0x01,
-    TRON_POWER = 0x02,
+    LINDA_POWER = 0x02,
 }
 
 export interface FreezeV2 {
@@ -85,8 +85,8 @@ export interface Account {
     net_usage: number;
     acquired_delegated_frozen_balance_for_bandwidth: number;
     delegated_frozen_balance_for_bandwidth: number;
-    old_tron_power: number;
-    tron_power: Frozen;
+    old_linda_power: number;
+    linda_power: Frozen;
     asset_optimized: boolean;
     create_time: number;
     latest_opration_time: number;
@@ -232,9 +232,9 @@ export interface AccountResourceMessage {
     assetNetLimit: HTTPMap<string, number>;
     TotalNetLimit: number;
     TotalNetWeight: number;
-    TotalTronPowerWeight: number;
-    tronPowerUsed: number;
-    tronPowerLimit: number;
+    TotalLindaPowerWeight: number;
+    lindaPowerUsed: number;
+    lindaPowerLimit: number;
     EnergyUsed: number;
     EnergyLimit: number;
     TotalEnergyLimit: number;

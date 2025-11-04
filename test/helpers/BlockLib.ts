@@ -1,14 +1,14 @@
-import { TronWeb } from '../setup/TronWeb.js';
+import { LindaWeb } from '../setup/LindaWeb.js';
 
 export default class BlockLib {
-    tronWeb: TronWeb;
-    constructor(tronWeb: TronWeb) {
-        if (!tronWeb) throw new Error('Expected instances of TronWeb and utils');
-        this.tronWeb = tronWeb;
+    lindaWeb: LindaWeb;
+    constructor(lindaWeb: LindaWeb) {
+        if (!lindaWeb) throw new Error('Expected instances of LindaWeb and utils');
+        this.lindaWeb = lindaWeb;
     }
 
     async getCurrent() {
-        const block: any = await this.tronWeb.fullNode.request('wallet/getnowblock');
+        const block: any = await this.lindaWeb.fullNode.request('wallet/getnowblock');
         block.fromPlugin = true;
         return block;
     }

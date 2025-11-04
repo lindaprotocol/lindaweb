@@ -1,5 +1,5 @@
 // @ts-ignore
-import { TronWeb, utils } from '../setup/TronWeb.js';
+import { LindaWeb, utils } from '../setup/LindaWeb.js';
 import { isHexString } from 'ethers';
 
 const bnify = (n: string | number) => BigInt(n);
@@ -100,9 +100,9 @@ const equals = (actual: any, expected: any) => {
 
     // Maybe address?
     try {
-        if (TronWeb.isAddress(actual)) {
+        if (LindaWeb.isAddress(actual)) {
             let actualAddress = actual;
-            let expectedAddress = TronWeb.address.toHex(expected);
+            let expectedAddress = LindaWeb.address.toHex(expected);
 
             return actualAddress === expectedAddress;
         }

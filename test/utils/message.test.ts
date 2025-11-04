@@ -1,11 +1,11 @@
 import { assert } from 'chai';
-import tronWebBuilder from '../helpers/tronWebBuilder.js';
-const utils = tronWebBuilder.utils;
+import lindaWebBuilder from '../helpers/lindaWebBuilder.js';
+const utils = lindaWebBuilder.utils;
 
 import messageCases from '../testcases/src/sign-message.js';
 const tests = messageCases.tests;
 
-describe('TronWeb.utils.message', function () {
+describe('LindaWeb.utils.message', function () {
     describe('#hashMessage()', function () {
         tests.forEach(function (test) {
             it('hashes a message "' + test.name + '"', function () {

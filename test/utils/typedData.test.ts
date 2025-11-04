@@ -1,10 +1,10 @@
 import { assert } from 'chai';
-import tronWebBuilder from '../helpers/tronWebBuilder.js';
+import lindaWebBuilder from '../helpers/lindaWebBuilder.js';
 import diskUtils from '../testcases/src/disk-utils.js';
 const { loadTests } = diskUtils;
-const { utils } = tronWebBuilder;
+const { utils } = lindaWebBuilder;
 
-describe('TronWeb.utils.typedData', function () {
+describe('LindaWeb.utils.typedData', function () {
     describe('#EIP-712', function () {
         const tests = loadTests('eip712');
         tests.forEach((test: any) => {
@@ -19,7 +19,7 @@ describe('TronWeb.utils.typedData', function () {
     });
 
     describe('#EIP-712 with trcToken', function () {
-        // https://nile.tronscan.io/#/contract/TRHsc32MH4CLJf9VMhMjW6M9VgyvN85ku3/code
+        // https://nile.lindascan.io/#/contract/TRHsc32MH4CLJf9VMhMjW6M9VgyvN85ku3/code
 
         const domain = {
             name: 'TrcToken Test',

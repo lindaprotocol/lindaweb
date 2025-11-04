@@ -1,29 +1,29 @@
 /* eslint-disable no-constant-condition */
 import { assert } from 'chai';
-import tronWebBuilder from '../helpers/tronWebBuilder.js';
+import lindaWebBuilder from '../helpers/lindaWebBuilder.js';
 import broadcaster from '../helpers/broadcaster.js';
 import wait from '../helpers/wait.js';
-import { Address } from '../../src/types/Trx.js';
-import { TronWeb, Event, Contract } from '../setup/TronWeb.js';
+import { Address } from '../../src/types/Lind.js';
+import { LindaWeb, Event, Contract } from '../setup/LindaWeb.js';
 import { CreateSmartContractTransaction } from '../../src/types/Transaction.js';
 
-describe('TronWeb.lib.event', async function () {
+describe('LindaWeb.lib.event', async function () {
     let accounts: {
         hex: Address[];
         b58: Address[];
         pks: string[];
     };
-    let tronWeb: TronWeb;
+    let lindaWeb: LindaWeb;
     let contract: Contract;
     let eventLength = 0;
     let contractAddress: Address;
 
     before(async function () {
-        tronWeb = tronWebBuilder.createInstance();
-        accounts = await tronWebBuilder.getTestAccounts(-1);
+        lindaWeb = lindaWebBuilder.createInstance();
+        accounts = await lindaWebBuilder.getTestAccounts(-1);
 
         const result = await broadcaster<CreateSmartContractTransaction>(
-            tronWeb.transactionBuilder.createSmartContract(
+            lindaWeb.transactionBuilder.createSmartContract(
                 {
                     abi: [
                         {
@@ -76,26 +76,26 @@ describe('TronWeb.lib.event', async function () {
         );
 
         contractAddress = result.receipt.transaction.contract_address!;
-        contract = await tronWeb.contract().at(contractAddress);
+        contract = await lindaWeb.contract().at(contractAddress);
     });
 
     describe('#constructor()', function () {
-        it('should have been set a full instance in tronWeb', function () {
-            assert.instanceOf(tronWeb.event, Event);
+        it('should have been set a full instance in lindaWeb', function () {
+            assert.instanceOf(lindaWeb.event, Event);
         });
     });
 
     describe('#getEventsByTransactionID', async function () {
         it('should emit an unconfirmed event and get it', async function () {
             this.timeout(60000);
-            tronWeb.setPrivateKey(accounts.pks[1]);
+            lindaWeb.setPrivateKey(accounts.pks[1]);
             const txId = await contract.methods.emitNow(accounts.hex[2], 2000).send({
                 from: accounts.hex[1],
             });
             eventLength++;
             let events;
             while (true) {
-                events = await tronWeb.event.getEventsByTransactionID(txId);
+                events = await lindaWeb.event.getEventsByTransactionID(txId);
                 if (events.data!.length) {
                     break;
                 }
@@ -109,7 +109,7 @@ describe('TronWeb.lib.event', async function () {
 
         it('should emit an event, wait for confirmation and get it', async function () {
             this.timeout(60000);
-            tronWeb.setPrivateKey(accounts.pks[1]);
+            lindaWeb.setPrivateKey(accounts.pks[1]);
             const output = await contract.methods.emitNow(accounts.hex[2], 2000).send({
                 from: accounts.hex[1],
                 shouldPollResponse: true,
@@ -120,7 +120,7 @@ describe('TronWeb.lib.event', async function () {
             const txId = output.id;
             let events;
             while (true) {
-                events = await tronWeb.event.getEventsByTransactionID(txId);
+                events = await lindaWeb.event.getEventsByTransactionID(txId);
                 if (events.data!.length) {
                     break;
                 }
@@ -133,20 +133,20 @@ describe('TronWeb.lib.event', async function () {
         });
     });
 
-    // available on trongrid.
+    // available on lindagrid.
     describe.skip('#getEventsByContractAddress', async function () {
         let sender = '41d4d999298d6bea26bf2bbb32a254362d8b9f9e6b';
         let receiver = '41f00c9a48e6d6baca7c36134e7cad7d43a851e7b2';
-        let tronWeb: TronWeb;
+        let lindaWeb: LindaWeb;
         let contractAddress: Address;
         let contract: Contract;
         let eventLength = 0;
 
         before(async function () {
-            tronWeb = tronWebBuilder.createInstance();
+            lindaWeb = lindaWebBuilder.createInstance();
 
             const result = await broadcaster<CreateSmartContractTransaction>(
-                tronWeb.transactionBuilder.createSmartContract({
+                lindaWeb.transactionBuilder.createSmartContract({
                     abi: [
                         {
                             anonymous: false,
@@ -195,7 +195,7 @@ describe('TronWeb.lib.event', async function () {
             );
 
             contractAddress = result.receipt.transaction.contract_address!;
-            contract = await tronWeb.contract().at(contractAddress);
+            contract = await lindaWeb.contract().at(contractAddress);
         });
 
         it('should emit an event and wait for it', async function () {
@@ -207,7 +207,7 @@ describe('TronWeb.lib.event', async function () {
             eventLength++;
             let events;
             while (true) {
-                events = await tronWeb.event.getEventsByContractAddress(contractAddress, {
+                events = await lindaWeb.event.getEventsByContractAddress(contractAddress, {
                     eventName: 'SomeEvent',
                     orderBy: 'block_timestamp,asc',
                 });
@@ -228,7 +228,7 @@ describe('TronWeb.lib.event', async function () {
     describe.skip('#contract.method.watch', async function () {
         it('should watch for an event', async function () {
             this.timeout(20000);
-            tronWeb.setPrivateKey(accounts.pks[3]);
+            lindaWeb.setPrivateKey(accounts.pks[3]);
 
             // @ts-ignore
             let watchTest = await contract.SomeEvent().watch((_: any, res: any) => {
@@ -248,7 +248,7 @@ describe('TronWeb.lib.event', async function () {
 
         it('should only watch for an event with given filters', async function () {
             this.timeout(20000);
-            tronWeb.setPrivateKey(accounts.pks[3]);
+            lindaWeb.setPrivateKey(accounts.pks[3]);
 
             // @ts-ignore
             let watchTest = await contract.SomeEvent().watch({ filters: { _amount: '4000' } }, (_: any, res: any) => {

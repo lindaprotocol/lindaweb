@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import validator from 'validator';
 import { ADDRESS_PREFIX } from './address.js';
 import { AbiParamsCommon } from '../types/ABI.js';
-import { IBigNumber } from '../types/TronWeb.js';
+import { IBigNumber } from '../types/LindaWeb.js';
 
 import type { EventQueryDataType, MapEventQueryDataType } from '../types/UtilsTypes.js';
 

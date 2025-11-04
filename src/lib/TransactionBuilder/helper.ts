@@ -1,4 +1,4 @@
-import { TronWeb } from '../../tronweb.js';
+import { LindaWeb } from '../../lindaweb.js';
 import { Transaction, TransactionWrapper } from '../../types/Transaction.js';
 import { txCheckWithArgs, txJsonToPb, txPbToTxID, txPbToRawDataHex } from '../../utils/transaction.js';
 import { keccak256 } from '../../utils/ethersUtils.js';
@@ -8,7 +8,7 @@ import { ContractParamter, ContractType } from '../../types/Contract.js';
 import { TriggerConstantContractOptions } from '../../types/TransactionBuilder.js';
 
 export function fromUtf8(value: string) {
-    return TronWeb.fromUtf8(value).replace(/^0x/, '');
+    return LindaWeb.fromUtf8(value).replace(/^0x/, '');
 }
 
 export function deepCopyJson<T = unknown>(json: object): T {
@@ -18,7 +18,7 @@ export function resultManager(transaction: TransactionWrapper, data: unknown, op
     if (transaction.Error) throw new Error(transaction.Error);
 
     if (transaction.result && transaction.result.message) {
-        throw new Error(TronWeb.toUtf8(transaction.result.message));
+        throw new Error(LindaWeb.toUtf8(transaction.result.message));
     }
     const authResult = txCheckWithArgs(transaction, data, options);
     if (authResult) {
@@ -35,7 +35,7 @@ export function resultManagerTriggerSmartContract(
     if (transaction.Error) throw new Error(transaction.Error);
 
     if (transaction.result && transaction.result.message) {
-        throw new Error(TronWeb.toUtf8(transaction.result.message));
+        throw new Error(LindaWeb.toUtf8(transaction.result.message));
     }
 
     if (!(options._isConstant || options.estimateEnergy)) {
@@ -94,7 +94,7 @@ function checkBlockHeader(options = {} as Partial<Transaction['raw_data']>): boo
 }
 
 export async function createTransaction<T extends ContractParamter>(
-    tronWeb: TronWeb,
+    lindaWeb: LindaWeb,
     type: ContractType,
     value: T,
     Permission_id?: number,
@@ -114,7 +114,7 @@ export async function createTransaction<T extends ContractParamter>(
                     type,
                 },
             ],
-            ...(checkBlockHeader(options) ? ({} as Transaction['raw_data']) : await getHeaderInfo(tronWeb.fullNode)),
+            ...(checkBlockHeader(options) ? ({} as Transaction['raw_data']) : await getHeaderInfo(lindaWeb.fullNode)),
             ...options,
         },
     };

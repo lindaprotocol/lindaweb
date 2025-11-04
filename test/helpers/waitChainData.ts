@@ -1,8 +1,8 @@
 // @ts-nocheck
-import tronWebBuilder from './tronWebBuilder.js';
+import lindaWebBuilder from './lindaWebBuilder.js';
 import wait from './wait.js';
 import chalk from 'chalk';
-const tronWeb = tronWebBuilder.createInstance();
+const lindaWeb = lindaWebBuilder.createInstance();
 
 function log(x: string) {
     process.stdout.write(chalk.yellow(x));
@@ -17,47 +17,47 @@ export default async function (type: string, ...params: any[]) {
         try {
             switch (type) {
                 case 'tx': {
-                    data = await tronWeb.trx.getTransaction(params[0]);
+                    data = await lindaWeb.lind.getTransaction(params[0]);
                     isFound = !!data.txID;
                     break;
                 }
                 case 'account': {
-                    data = await tronWeb.trx.getUnconfirmedAccount(params[0]);
+                    data = await lindaWeb.lind.getUnconfirmedAccount(params[0]);
                     isFound = !!data.address;
                     break;
                 }
                 case 'accountById': {
-                    data = await tronWeb.trx.getUnconfirmedAccountById(params[0]);
+                    data = await lindaWeb.lind.getUnconfirmedAccountById(params[0]);
                     isFound = !!data.address;
                     break;
                 }
                 case 'token': {
-                    data = await tronWeb.trx.getTokensIssuedByAddress(params[0]);
+                    data = await lindaWeb.lind.getTokensIssuedByAddress(params[0]);
                     isFound = !!Object.keys(data).length;
                     break;
                 }
                 case 'tokenById': {
-                    data = await tronWeb.trx.getTokenFromID(params[0]);
+                    data = await lindaWeb.lind.getTokenFromID(params[0]);
                     isFound = !!data.name;
                     break;
                 }
                 case 'sendToken': {
-                    data = await tronWeb.trx.getUnconfirmedAccount(params[0]);
+                    data = await lindaWeb.lind.getUnconfirmedAccount(params[0]);
                     isFound = data && data.assetV2 && data.assetV2.length && data.assetV2[0].value !== params[1];
                     break;
                 }
                 case 'balance': {
-                    data = await tronWeb.trx.getUnconfirmedBalance(params[0]);
+                    data = await lindaWeb.lind.getUnconfirmedBalance(params[0]);
                     isFound = data !== params[1];
                     break;
                 }
                 case 'freezeBp': {
-                    data = await tronWeb.trx.getUnconfirmedAccount(params[0]);
+                    data = await lindaWeb.lind.getUnconfirmedAccount(params[0]);
                     isFound = data.frozen && data.frozen[0].frozen_balance !== params[1];
                     break;
                 }
                 case 'freezeEnergy': {
-                    data = await tronWeb.trx.getUnconfirmedAccount(params[0]);
+                    data = await lindaWeb.lind.getUnconfirmedAccount(params[0]);
                     isFound =
                         data.account_resource &&
                         data.account_resource.frozen_balance_for_energy &&
@@ -65,12 +65,12 @@ export default async function (type: string, ...params: any[]) {
                     break;
                 }
                 case 'contract': {
-                    data = await tronWeb.trx.getContract(params[0]);
+                    data = await lindaWeb.lind.getContract(params[0]);
                     isFound = !!data.contract_address;
                     break;
                 }
                 case 'exchange': {
-                    data = await tronWeb.trx.getExchangeByID(params[0]);
+                    data = await lindaWeb.lind.getExchangeByID(params[0]);
                     isFound = !!data.exchange_id;
                     break;
                 }
