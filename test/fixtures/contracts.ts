@@ -465,7 +465,7 @@ export default {
         contract Test {
           struct Struct47985BF5FB {
             address a;
-            trcToken b;
+            lrcToken b;
             address c;
           }
           mapping (uint256 => Struct47985BF5FB) public s;
@@ -494,9 +494,9 @@ export default {
                                 type: 'address',
                             },
                             {
-                                internalType: 'trcToken',
+                                internalType: 'lrcToken',
                                 name: 'b',
-                                type: 'trcToken',
+                                type: 'lrcToken',
                             },
                             {
                                 internalType: 'address',
@@ -528,9 +528,9 @@ export default {
                         type: 'address',
                     },
                     {
-                        internalType: 'trcToken',
+                        internalType: 'lrcToken',
                         name: 'b',
-                        type: 'trcToken',
+                        type: 'lrcToken',
                     },
                     {
                         internalType: 'address',
@@ -551,9 +551,9 @@ export default {
                                 type: 'address',
                             },
                             {
-                                internalType: 'trcToken',
+                                internalType: 'lrcToken',
                                 name: 'b',
-                                type: 'trcToken',
+                                type: 'lrcToken',
                             },
                             {
                                 internalType: 'address',

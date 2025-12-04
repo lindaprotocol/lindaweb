@@ -28,11 +28,11 @@ export interface CreateSmartContractOptions extends TransactionCommonOptions {
      */
     callValue?: number;
     /**
-     * The id of trc10 token transfer to the contract (Optional)
+     * The id of lrc10 token transfer to the contract (Optional)
      */
     tokenId?: string;
     /**
-     * The amount of trc10 token transfer to the contract for each call (Optional)
+     * The amount of lrc10 token transfer to the contract for each call (Optional)
      */
     tokenValue?: number;
     /**
@@ -89,11 +89,11 @@ export interface TriggerSmartContractOptions extends TransactionCommonOptions {
      */
     callValue?: number;
     /**
-     * The id of trc10 token transfer to the contract (Optional)
+     * The id of lrc10 token transfer to the contract (Optional)
      */
     tokenId?: string;
     /**
-     * The amount of trc10 token transfer to the contract for each call (Optional)
+     * The amount of lrc10 token transfer to the contract for each call (Optional)
      */
     tokenValue?: number;
     /**

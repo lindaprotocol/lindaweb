@@ -636,7 +636,7 @@ describe('LindaWeb.lind', function () {
         describe('#signTypedData', async function () {
             // All properties on a domain are optional
             const domain = {
-                name: 'TrcToken Test',
+                name: 'LrcToken Test',
                 version: '1',
                 chainId: '0xd698d4192c56cb6be724a558448e2684802de4d6cd8690dc',
                 verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
@@ -647,20 +647,20 @@ describe('LindaWeb.lind', function () {
                 FromPerson: [
                     { name: 'name', type: 'string' },
                     { name: 'wallet', type: 'address' },
-                    { name: 'trcTokenId', type: 'trcToken' },
+                    { name: 'lrcTokenId', type: 'lrcToken' },
                 ],
                 ToPerson: [
                     { name: 'name', type: 'string' },
                     { name: 'wallet', type: 'address' },
-                    { name: 'trcTokenArr', type: 'trcToken[]' },
+                    { name: 'lrcTokenArr', type: 'lrcToken[]' },
                 ],
                 Mail: [
                     { name: 'from', type: 'FromPerson' },
                     { name: 'to', type: 'ToPerson' },
                     { name: 'contents', type: 'string' },
                     { name: 'tAddr', type: 'address[]' },
-                    { name: 'trcTokenId', type: 'trcToken' },
-                    { name: 'trcTokenArr', type: 'trcToken[]' },
+                    { name: 'lrcTokenId', type: 'lrcToken' },
+                    { name: 'lrcTokenArr', type: 'lrcToken[]' },
                 ],
             };
 
@@ -669,17 +669,17 @@ describe('LindaWeb.lind', function () {
                 from: {
                     name: 'Cow',
                     wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-                    trcTokenId: '1002000',
+                    lrcTokenId: '1002000',
                 },
                 to: {
                     name: 'Bob',
                     wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-                    trcTokenArr: ['1002000', '1002000'],
+                    lrcTokenArr: ['1002000', '1002000'],
                 },
                 contents: 'Hello, Bob!',
                 tAddr: ['0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB', '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'],
-                trcTokenId: '1002000',
-                trcTokenArr: ['1002000', '1002000'],
+                lrcTokenId: '1002000',
+                lrcTokenArr: ['1002000', '1002000'],
             };
 
             it('should sign typed data', async function () {
@@ -1516,7 +1516,7 @@ describe('LindaWeb.lind', function () {
         });
     });
 
-    // TRC 10 Token Test
+    // LRC 10 Token Test
     describe('#Token Test', function () {
         describe('#sendAsset', async function () {
             let token: Record<string, Token>;

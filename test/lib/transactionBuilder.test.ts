@@ -3314,7 +3314,7 @@ describe('LindaWeb.transactionBuilder', function () {
             );
         });
 
-        it('should create or trigger a smart contract with funcABIV2 (V2 input trcToken )', async function () {
+        it('should create or trigger a smart contract with funcABIV2 (V2 input lrcToken )', async function () {
             const issuerAddress = accounts.hex[40];
             const issuerPk = accounts.pks[40];
 

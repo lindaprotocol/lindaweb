@@ -794,8 +794,8 @@ export class TransactionBuilder {
                     };
                     if (type === 'address') value = replaceAddressPrefix(value);
                     else if (type.match(/^([^\x5b]*)(\x5b|$)/)?.[0] === 'address[') value = replaceAddressPrefix(value);
-                    else if (/trcToken/.test(type)) {
-                        type = type.replace(/trcToken/, 'uint256');
+                    else if (/lrcToken/.test(type)) {
+                        type = type.replace(/lrcToken/, 'uint256');
                     }
 
                     types.push(type);
@@ -1039,10 +1039,10 @@ export class TransactionBuilder {
                 }
 
                 try {
-                    // workaround for unsupported trcToken type
+                    // workaround for unsupported lrcToken type
                     types = types.map((type) => {
-                        if (/trcToken/.test(type)) {
-                            type = type.replace(/trcToken/, 'uint256');
+                        if (/lrcToken/.test(type)) {
+                            type = type.replace(/lrcToken/, 'uint256');
                         }
                         return type;
                     });

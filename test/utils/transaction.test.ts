@@ -65,8 +65,8 @@ describe('#LindaWeb.utils.transaction', function() {
                 }
 
                 types = types.map((type) => {
-                    if (/trcToken/.test(type)) {
-                        type = type.replace(/trcToken/, 'uint256');
+                    if (/lrcToken/.test(type)) {
+                        type = type.replace(/lrcToken/, 'uint256');
                     }
                     return type;
                 });

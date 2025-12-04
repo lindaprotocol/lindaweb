@@ -151,7 +151,7 @@ const regexIdPrefix = new RegExp('^([a-zA-Z$_][a-zA-Z0-9$_]*)');
 
 // Parser regexs to check validity
 const regexId = new RegExp('^([a-zA-Z$_][a-zA-Z0-9$_]*)$');
-const regexType = new RegExp('^(trcToken|address|bool|bytes([0-9]*)|string|u?int([0-9]*))$');
+const regexType = new RegExp('^(lrcToken|address|bool|bytes([0-9]*)|string|u?int([0-9]*))$');
 
 /**
  *  @ignore:

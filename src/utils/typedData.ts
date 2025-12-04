@@ -180,7 +180,7 @@ function getBaseEncoder(type: string): null | ((value: any) => string) {
     }
 
     switch (type) {
-        case 'trcToken':
+        case 'lrcToken':
             return getBaseEncoder('uint256');
         case 'address':
             return function (value: string) {
@@ -657,7 +657,7 @@ export class TypedDataEncoder {
                 }
 
                 switch (type) {
-                    case 'trcToken':
+                    case 'lrcToken':
                         return getBigInt(value).toString();
                     case 'address':
                         return value.toLowerCase();

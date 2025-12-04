@@ -15,10 +15,10 @@ export function decodeParams(names: string[], types: string[], output: string, i
         throw new Error('The encoded string is not valid. Its length must be a multiple of 64.');
     }
 
-    // workaround for unsupported trcToken type
+    // workaround for unsupported lrcToken type
     types = types.map((type) => {
-        if (/trcToken/.test(type)) {
-            type = type.replace(/trcToken/, 'uint256');
+        if (/lrcToken/.test(type)) {
+            type = type.replace(/lrcToken/, 'uint256');
         }
         return type;
     });
@@ -72,7 +72,7 @@ export function encodeParamsV2ByABI(funABI: FunctionFragment, args: any[]) {
             return `tuple(${innerTypes.join(',')})${extractSize(typeDef.type)}`;
         }
 
-        if (/trcToken/.test(typeDef.type)) return typeDef.type.replace(/trcToken/, 'uint256');
+        if (/lrcToken/.test(typeDef.type)) return typeDef.type.replace(/lrcToken/, 'uint256');
 
         return typeDef.type;
     };
@@ -80,7 +80,7 @@ export function encodeParamsV2ByABI(funABI: FunctionFragment, args: any[]) {
     const convertTypes = (types: string[]) => {
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
-            if (/trcToken/.test(type)) types[i] = type.replace(/trcToken/, 'uint256');
+            if (/lrcToken/.test(type)) types[i] = type.replace(/lrcToken/, 'uint256');
         }
     };
 
@@ -152,7 +152,7 @@ export function decodeParamsV2ByABI<T extends FunctionFragment>(funABI: T, data:
     const convertTypeNames = (types: string[]) => {
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
-            if (/^trcToken/.test(type)) types[i] = type.replace(/^trcToken/, 'uint256');
+            if (/^lrcToken/.test(type)) types[i] = type.replace(/^lrcToken/, 'uint256');
         }
     };
 
@@ -191,7 +191,7 @@ export function decodeParamsV2ByABI<T extends FunctionFragment>(funABI: T, data:
             });
             return `tuple(${innerTypes.join(',')})${extractSize(typeDef.type)}${name}`;
         }
-        if (/trcToken/.test(typeDef.type)) return typeDef.type.replace(/trcToken/, 'uint256') + name;
+        if (/lrcToken/.test(typeDef.type)) return typeDef.type.replace(/lrcToken/, 'uint256') + name;
 
         return typeDef.type + name;
     };

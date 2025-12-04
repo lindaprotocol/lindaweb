@@ -165,14 +165,14 @@ export type SolidityIntegerType<Type extends string> = Type extends `int${infer 
         ? Numbers
         : never;
 
-type _SolidityTrcTokenType<Type extends string> = Type extends `trcToken[${infer Length}]${infer Loop}`
-    ? SolidityTypedArray<_SolidityTrcTokenType<`trcToken${Loop}`>, Length>
-    : Type extends 'trcToken'
+type _SolidityLrcTokenType<Type extends string> = Type extends `lrcToken[${infer Length}]${infer Loop}`
+    ? SolidityTypedArray<_SolidityLrcTokenType<`lrcToken${Loop}`>, Length>
+    : Type extends 'lrcToken'
         ? Numbers
         : never;
 
-export type SolidityTrcTokenType<Type extends string> = Type extends `trcToken${infer Loop}`
-    ? _SolidityTrcTokenType<`trcToken${ReverseArray<Loop>}`>
+export type SolidityLrcTokenType<Type extends string> = Type extends `lrcToken${infer Loop}`
+    ? _SolidityLrcTokenType<`lrcToken${ReverseArray<Loop>}`>
     : never;
 
 type _SolidityBytesType<Type extends string> = Type extends `bytes${infer Size extends BytesRange | ''}[${infer Length}]${infer Loop}`
@@ -213,7 +213,7 @@ export type SolidityValueType<T extends string, C extends ReadonlyArray<AbiParam
     | SolidityBooleanType<T>
     | SolidityUIntegerType<T>
     | SolidityIntegerType<T>
-    | SolidityTrcTokenType<T>
+    | SolidityLrcTokenType<T>
     | SolidityBytesType<T>
     | SolidityTupleType<T, C>;
 
