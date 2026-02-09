@@ -10,7 +10,7 @@
   </a>
 
   <a href="https://github.com/lindaprotocol/lindaweb/issues">
-    <img src="https://img.shields.io/github/issues/linda-us/tronweb.svg">
+    <img src="https://img.shields.io/github/issues/tron-us/tronweb.svg">
   </a>
 
   <a href="https://github.com/lindaprotocol/lindaweb/pulls">
@@ -38,7 +38,7 @@ Any new LINDA feature will be incorporated into LindaWeb. Changes to the API to 
 
 ## HomePage
 
-__[lindaweb.network](https://lindaweb.network)__
+__[lindaweb.lindacoin.org](https://lindaweb.lindacoin.org)__
 
 ## Compatibility
 - Version built for Node.js v14 and above
