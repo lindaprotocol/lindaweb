@@ -62,13 +62,15 @@ For recent history, see the [CHANGELOG](https://github.com/lindaprotocol/lindawe
 
 ## Installation
 
+__[LindaWeb - NPM Package](https://www.npmjs.com/package/@lindacoin/lindaweb)__
+
 ### Node.js
 ```bash
-npm install lindaweb
+npm install @lindacoin/lindaweb
 ```
 or
 ```bash
-yarn add lindaweb
+yarn add lindacoin/lindaweb
 ```
 
 ### Browser
@@ -88,9 +90,9 @@ This project is also published on NPM and you can access CDN mirrors of this rel
 
 Shasta is the official Linda testnet. To use it use the following endpoint:
 ```
-https://api.shasta.lindagrid.io
+https://api.shasta.lindagrid.lindacoin.org
 ```
-Get some Shasta LIND at https://www.lindagrid.io/shasta and play with it.
+Get some Shasta LIND at https://www.lindagrid.lindacoin.org/shasta and play with it.
 Anything you do should be explorable on https://shasta.lindascan.org
 
 ## Your local private network for heavy testing
@@ -136,7 +138,7 @@ Supposing you are using a server which provides everything, like LindaGrid, you 
 
 ```js
 const lindaWeb = new LindaWeb({
-    fullHost: 'https://api.lindagrid.io',
+    fullHost: 'https://api.lindagrid.lindacoin.org',
     headers: { "LINDA-PRO-API-KEY": 'your api key' },
     privateKey: 'your private key'
 })
@@ -152,7 +154,7 @@ If you are, for example, using a server as full and solidity node, and another s
 
 ```js
 const lindaWeb = new LindaWeb({
-    fullHost: 'https://api.lindagrid.io',
+    fullHost: 'https://api.lindagrid.lindacoin.org',
     eventServer: 'https://api.someotherevent.io',
     privateKey: 'your private key'
   }
