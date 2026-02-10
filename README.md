@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://lindaweb.network">
+  <a href="https://lindaweb.lindacoin.org">
     <img align="center" src="https://raw.githubusercontent.com/lindaprotocol/lindaweb/master/assets/logo.png"/>
   </a>
 </h1>
@@ -28,9 +28,9 @@
 
 ## What is LindaWeb?
 
-[LindaWeb](https://lindaweb.network) aims to deliver a unified, seamless development experience influenced by Ethereum's [Web3](https://github.com/ethereum/web3.js/) implementation. We have taken the core ideas and expanded upon them to unlock the functionality of LINDA's unique feature set along with offering new tools for integrating DApps in the browser, Node.js and IoT devices.
+[LindaWeb](https://lindaweb.lindacoin.org) aims to deliver a unified, seamless development experience influenced by Ethereum's [Web3](https://github.com/ethereum/web3.js/) implementation. We have taken the core ideas and expanded upon them to unlock the functionality of LINDA's unique feature set along with offering new tools for integrating DApps in the browser, Node.js and IoT devices.
 
-To better support its use in TypeScript projects, we have rewritten the entire library in TypeScript. And to make the LindaWeb API more secure and consistent, there are some breaking changes. <font color=red>Please check out [<font color=red>6.x API documentation</font>](https://lindaweb.network/docu/docs/intro/)</font> for detailed changes so you can start using the new TypeScript version of LindaWeb early. Any questions or feedback are welcome [here](https://github.com/lindaprotocol/lindaweb/issues/new).
+To better support its use in TypeScript projects, we have rewritten the entire library in TypeScript. And to make the LindaWeb API more secure and consistent, there are some breaking changes. <font color=red>Please check out [<font color=red>6.x API documentation</font>](https://lindaweb.lindacoin.org/docu/docs/intro/)</font> for detailed changes so you can start using the new TypeScript version of LindaWeb early. Any questions or feedback are welcome [here](https://github.com/lindaprotocol/lindaweb/issues/new).
 
 **Project scope**
 
@@ -118,7 +118,7 @@ First of all, in your typescript file, define LindaWeb:
 import { LindaWeb, utils as LindaWebUtils, Lind, TransactionBuilder, Contract, Event, Plugin } from 'lindaweb';
 ```
 
-Please note that this is not the same as v5.x. If you want to dive into more differences, check out [migration guide](https://lindaweb.network/docu/docs/Migrating%20from%20v5)
+Please note that this is not the same as v5.x. If you want to dive into more differences, check out [migration guide](https://lindaweb.lindacoin.org/docu/docs/Migrating%20from%20v5)
 
 When you instantiate LindaWeb you can define
 
@@ -182,7 +182,7 @@ This is a problem caused by webpack as it doesn't load cjs file correctly. To so
 }
 ```
 
-For more questions, please refer to [LindaWeb Doc](https://lindaweb.network/docu/docs/Migrating%20from%20v5#faq).
+For more questions, please refer to [LindaWeb Doc](https://lindaweb.lindacoin.org/docu/docs/Migrating%20from%20v5#faq).
 
 ## Integrity Check
 
@@ -190,7 +190,7 @@ The package files will be signed using a GPG key pair, and the correctness of th
 
 ```
 pub: 4371 AB85 E5A5 8FAA 88AD 7FDF 9945 DBCA 8C4B B810
-uid: dev@lindaweb.network
+uid: dev@lindaweb.lindacoin.org
 ```
 
 ## Contributions
