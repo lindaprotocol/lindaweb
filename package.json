@@ -1,6 +1,6 @@
 {
     "name": "@lindacoin/lindaweb",
-    "version": "6.0.4",
+    "version": "6.0.6",
     "description": "JavaScript SDK that encapsulates the LINDA HTTP API",
     "main": "./lib/commonjs/index.js",
     "module": "./lib/esm/index.js",
