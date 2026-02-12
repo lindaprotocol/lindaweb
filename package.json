@@ -1,5 +1,5 @@
 {
-    "name": "lindaweb",
+    "name": "@lindacoin/lindaweb",
     "version": "6.0.4",
     "description": "JavaScript SDK that encapsulates the LINDA HTTP API",
     "main": "./lib/commonjs/index.js",
@@ -133,7 +133,7 @@
     },
     "author": {
         "name": "Linda Protocol",
-        "url": "https://github.com/lindaprotocol"
+        "url": "https://github.com/lindaprotocol/lindaweb"
     },
     "homepage": "https://lindaweb.lindacoin.org",
     "license": "MIT",

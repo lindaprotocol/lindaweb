@@ -4,9 +4,9 @@ import { isHex, isString } from './validations.js';
 import { keccak256 } from './ethersUtils.js';
 
 export const ADDRESS_SIZE = 34;
-export const ADDRESS_PREFIX = '41';
-export const ADDRESS_PREFIX_BYTE = 0x41;
-export const ADDRESS_PREFIX_REGEX = /^(41)/;
+export const ADDRESS_PREFIX = '30';
+export const ADDRESS_PREFIX_BYTE = 0x30;
+export const ADDRESS_PREFIX_REGEX = /^(30)/;
 
 export const LINDA_BIP39_PATH_PREFIX = "m/44'/195'";
 export const LINDA_BIP39_PATH_INDEX_0 = LINDA_BIP39_PATH_PREFIX + "/0'/0/0";
